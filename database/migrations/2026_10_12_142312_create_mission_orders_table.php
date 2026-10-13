@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('decision_note')->nullable();
             $table->text('report')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();$table->string('file_path')->nullable(); // <-- PDF du document généré
             $table->timestamps();
             $table->unique(['company_id', 'reference']);
             $table->index(['company_id', 'status']);
