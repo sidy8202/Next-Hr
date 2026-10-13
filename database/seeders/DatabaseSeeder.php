@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Department;
+use App\Models\Employee;
+use App\Models\Permission;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -11,12 +13,9 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // 1. Administrateur de la plateforme (Aucune entreprise attribuée)
+        // 1. Admin Plateforme
         User::forceCreate([
             'name'                 => 'Admin Plateforme',
             'email'                => 'admin@nexthr.me',
@@ -27,18 +26,16 @@ class DatabaseSeeder extends Seeder
             'must_change_password' => false,
         ]);
 
-        // 2. Entreprise de démonstration
+        // 2. Entreprise Acme Mali
         $acme = Company::create([
             'name'     => 'Acme Mali',
             'slug'     => 'acme-mali',
             'email'    => 'contact@acme.ml',
-            'phone'    => '+223 20 00 00 00',
-            'country'  => 'ML',
-            'currency' => 'XOF',
             'status'   => 'active',
+            'currency' => 'XOF',
         ]);
 
-        // 3. Propriétaire de l'entreprise Acme Mali
+        // 3. Propriétaire
         User::forceCreate([
             'company_id'           => $acme->id,
             'name'                 => 'Sidy Lamine',
@@ -50,7 +47,7 @@ class DatabaseSeeder extends Seeder
             'must_change_password' => true,
         ]);
 
-        // 4. Départements d'Acme Mali
+        // 4. Département Finance
         $finance = Department::forceCreate([
             'company_id' => $acme->id,
             'name'       => 'Finance & Comptabilité',
@@ -58,77 +55,84 @@ class DatabaseSeeder extends Seeder
             'is_active'  => true,
         ]);
 
-        $it = Department::forceCreate([
-            'company_id' => $acme->id,
-            'name'       => 'Informatique & Systèmes',
-            'code'       => 'IT',
-            'is_active'  => true,
-        ]);
-
-        $hr = Department::forceCreate([
-            'company_id' => $acme->id,
-            'name'       => 'Ressources Humaines',
-            'code'       => 'RH',
-            'is_active'  => true,
-        ]);
-
-        // 5. Postes par département
-
-        // -- Département Finance
-        Position::forceCreate([
+        $posManager = Position::forceCreate([
             'company_id'    => $acme->id,
             'department_id' => $finance->id,
             'title'         => 'Directeur Financier',
-            'grade'         => 'Cadre Supérieur',
-            'salary_min'    => 1000000,
-            'salary_max'    => 2000000,
         ]);
 
-        Position::forceCreate([
+        $posAccountant = Position::forceCreate([
             'company_id'    => $acme->id,
             'department_id' => $finance->id,
-            'title'         => 'Comptable Principal',
-            'grade'         => 'Cadre',
-            'salary_min'    => 500000,
-            'salary_max'    => 900000,
+            'title'         => 'Comptable',
         ]);
 
-        // -- Département Informatique
-        Position::forceCreate([
+        // 5. Employés
+        $moussa = Employee::forceCreate([
             'company_id'    => $acme->id,
-            'department_id' => $it->id,
-            'title'         => 'Administrateur Systèmes & Réseaux',
-            'grade'         => 'Cadre',
-            'salary_min'    => 600000,
-            'salary_max'    => 1200000,
+            'matricule'     => 'EM0001',
+            'first_name'    => 'Moussa',
+            'last_name'     => 'Diarra',
+            'department_id' => $finance->id,
+            'position_id'   => $posManager->id,
+            'hire_date'     => '2026-01-01',
         ]);
 
-        Position::forceCreate([
+        $awa = Employee::forceCreate([
             'company_id'    => $acme->id,
-            'department_id' => $it->id,
-            'title'         => 'Développeur Web Fullstack',
-            'grade'         => 'Cadre',
-            'salary_min'    => 500000,
-            'salary_max'    => 1000000,
+            'matricule'     => 'EM0002',
+            'first_name'    => 'Awa',
+            'last_name'     => 'Traoré',
+            'department_id' => $finance->id,
+            'position_id'   => $posAccountant->id,
+            'manager_id'    => $moussa->id,
+            'hire_date'     => '2026-01-01',
         ]);
 
-        // -- Département Ressources Humaines
-        Position::forceCreate([
+        $oumar = Employee::forceCreate([
             'company_id'    => $acme->id,
-            'department_id' => $hr->id,
-            'title'         => 'Responsable RH',
-            'grade'         => 'Cadre Supérieur',
-            'salary_min'    => 800000,
-            'salary_max'    => 1500000,
+            'matricule'     => 'EM0003',
+            'first_name'    => 'Oumar',
+            'last_name'     => 'Keita',
+            'department_id' => $finance->id,
+            'position_id'   => $posAccountant->id,
+            'manager_id'    => $moussa->id,
+            'hire_date'     => '2026-01-01',
         ]);
 
-        Position::forceCreate([
-            'company_id'    => $acme->id,
-            'department_id' => $hr->id,
-            'title'         => 'Gestionnaire de la Paie',
-            'grade'         => 'Agent de Maîtrise',
-            'salary_min'    => 400000,
-            'salary_max'    => 750000,
+        // 6. Utilisateurs associés
+        $uMoussa = User::forceCreate([
+            'company_id'           => $acme->id,
+            'employee_id'          => $moussa->id,
+            'name'                 => 'Moussa Diarra',
+            'email'                => 'moussa@acme.ml',
+            'password'             => Hash::make('Secret123!'),
+            'must_change_password' => true,
+        ]);
+
+        $uAwa = User::forceCreate([
+            'company_id'           => $acme->id,
+            'employee_id'          => $awa->id,
+            'name'                 => 'Awa Traoré',
+            'email'                => 'awa@acme.ml',
+            'password'             => Hash::make('Secret123!'),
+            'must_change_password' => true,
+        ]);
+
+        // 7. Permissions de test
+        Permission::create([
+            'user_id'    => $uMoussa->id,
+            'resource'   => 'employees',
+            'can_read'   => true,
+            'can_update' => true,
+            'scope'      => 'team',
+        ]);
+
+        Permission::create([
+            'user_id'  => $uAwa->id,
+            'resource' => 'employees',
+            'can_read' => true,
+            'scope'    => 'own',
         ]);
     }
 }
