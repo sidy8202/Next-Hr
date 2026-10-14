@@ -8,10 +8,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 class Employee extends Model
 {
     use BelongsToCompany, SoftDeletes;
+
+     /**
+     * Protection contre le mass-assignment :
+     * 'id' et 'company_id' sont verrouillés, tous les autres champs sont autorisés.
+     */
+    protected $guarded = ['id', 'company_id'];
+
+    /**
+     * Scope : Ne montre que les employés accessibles selon la portée de l'utilisateur.
+     */
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        return match ($user->permissionScope('employees')) {
+            'all'   => $query,
+            'team'  => $query->where(fn ($q) => $q->whereKey($user->employee_id)->orWhere('manager_id', $user->employee_id)),
+            'own'   => $query->whereKey($user->employee_id),
+            default => $query->whereRaw('1 = 0'),
+        };
+    }
 
     protected $fillable = [
         'matricule',
@@ -45,6 +65,14 @@ class Employee extends Model
         'hire_date' => 'date',
         'is_expatriate' => 'boolean',
     ];
+
+    /**
+     * Accesseur : Nom complet (Prénom Nom).
+     */
+    protected function fullName(): Attribute
+    {
+        return Attribute::get(fn () => trim("{$this->first_name} {$this->last_name}"));
+    }
 
     /**
      * Le département de l'employé.
@@ -92,5 +120,39 @@ class Employee extends Model
     public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class);
+    }
+    public function termination(): HasOne
+    {
+        return $this->hasOne(Termination::class);
+    }
+
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function leaveBalances(): HasMany
+    {
+        return $this->hasMany(LeaveBalance::class);
+    }
+
+    public function payslips(): HasMany
+    {
+        return $this->hasMany(Payslip::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function absencePermissions(): HasMany
+    {
+        return $this->hasMany(AbsencePermission::class);
+    }
+
+    public function missionOrderEmployees(): HasMany
+    {
+        return $this->hasMany(MissionOrderEmployee::class);
     }
 }

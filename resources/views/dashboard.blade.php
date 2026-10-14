@@ -28,7 +28,7 @@
     {{-- Cartes de statistiques --}}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-ui.stat-card label="Effectif total" value="—" icon="users" hint="Employés actifs" />
-        <x-ui.stat-card label="Présents aujourd'hui" value="—" icon="check-circle" hint="Sur site ou télétravail" />
+        <x-ui.stat-card label="Présents aujourd'hui" value="—" icon="check-circle" hint="Ni en Congé ni en mission" />
         <x-ui.stat-card label="En congé" value="—" icon="sun" hint="Absences autorisées" />
         <x-ui.stat-card label="En mission" value="—" icon="paper-airplane" hint="Ordres de mission" />
     </div>

@@ -35,6 +35,15 @@ class DatabaseSeeder extends Seeder
             'currency' => 'XOF',
         ]);
 
+        //Matricule
+        \App\Models\MatriculeSetting::forceCreate([
+        'company_id'    => $acme->id,
+        'pattern'       => '{PREFIX}{SEQ:4}',
+        'prefix'        => 'EM',
+        'counter_scope' => 'global',
+        'is_active'     => true,
+        ]);
+
         // 3. Propriétaire
         User::forceCreate([
             'company_id'           => $acme->id,
@@ -134,5 +143,7 @@ class DatabaseSeeder extends Seeder
             'can_read' => true,
             'scope'    => 'own',
         ]);
+
+
     }
 }

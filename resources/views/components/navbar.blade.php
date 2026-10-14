@@ -46,7 +46,7 @@
     <div x-data="{ open: false }" class="relative">
         <button type="button" @click="open = ! open" class="flex items-center gap-2 rounded-xl p-1.5 hover:bg-surface-muted">
             <span class="flex size-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
-                {{ Str::upper(Str::substr(auth()->user()->name, 0, 2)) }}
+                {{ Str::of(auth()->user()->name)->explode(' ')->map(fn ($p) => Str::upper(Str::substr($p, 0, 1)))->take(2)->implode('') }}
             </span>
             <span class="hidden text-sm font-medium sm:block">{{ auth()->user()->name }}</span>
         </button>

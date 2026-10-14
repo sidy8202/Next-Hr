@@ -11,13 +11,11 @@ class Position extends Model
 {
     use BelongsToCompany;
 
-    protected $fillable = [
-        'department_id',
-        'title',
-        'grade',
-        'salary_min',
-        'salary_max',
-    ];
+    /**
+     * Protection contre le mass-assignment :
+     * 'id' et 'company_id' sont verrouillés, tous les autres champs sont autorisés.
+     */
+    protected $guarded = ['id', 'company_id'];
 
     /**
      * Le département dont dépend ce poste.
