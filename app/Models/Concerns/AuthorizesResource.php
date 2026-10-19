@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 trait AuthorizesResource
 {
-    protected function authorizeResource(string $action, string $resource, ?Model $record = null): void
+    /**
+     * Autorise une action sur une ressource, côté serveur, à CHAQUE action.
+     * Nommée authorizeAction : « authorizeResource » existe déjà dans la classe de base de Livewire.
+     */
+    protected function authorizeAction(string $action, string $resource, ?Model $record = null): void
     {
         $user = auth()->user();
 

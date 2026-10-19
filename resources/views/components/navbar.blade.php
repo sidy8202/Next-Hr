@@ -21,18 +21,7 @@
     </button>
 
     {{-- Notifications (branchées à l'étape 2.4) --}}
-    <div x-data="{ open: false }" class="relative">
-        <button type="button" @click="open = ! open" aria-label="Notifications"
-                class="relative rounded-xl p-2 text-ink-muted hover:bg-surface-muted">
-            <x-heroicon-o-bell class="size-6" />
-            <span class="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-rose-500 ring-2 ring-surface"></span>
-        </button>
-        <div x-show="open" x-cloak x-transition @click.outside="open = false"
-             class="absolute right-0 mt-2 w-80 rounded-2xl border border-line bg-surface p-4 shadow-xl">
-            <p class="text-sm font-semibold">Notifications</p>
-            <p class="mt-3 text-sm text-ink-muted">Aucune notification pour le moment.</p>
-        </div>
-    </div>
+    <livewire:notification-bell />
 
     {{-- Thème clair / sombre --}}
     <button type="button" x-data

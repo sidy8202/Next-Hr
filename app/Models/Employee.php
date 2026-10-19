@@ -43,6 +43,8 @@ class Employee extends Model
         'nationality',
         'is_expatriate',
         'marital_status',
+        'spouse_works',
+        'children_count',
         'national_id',
         'work_permit_number',
         'work_permit_expires_at',
@@ -60,6 +62,8 @@ class Employee extends Model
     ];
 
     protected $casts = [
+        'children_count' => 'integer',
+        'spouse_works'   => 'boolean',
         'birth_date' => 'date',
         'work_permit_expires_at' => 'date',
         'hire_date' => 'date',

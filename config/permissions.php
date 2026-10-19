@@ -56,14 +56,19 @@ return [
 
         // Recrutement
         'job_openings'        => ['label' => 'Offres d’emploi',      'module' => 'Recrutement'],
-        'candidates'          => ['label' => 'Candidats',            'module' => 'Recrutement'],
         'candidate_categories' => ['label' => 'Catégories de candidats', 'module' => 'Recrutement'],
         'job_applications'    => ['label' => 'Candidatures',         'module' => 'Recrutement'],
+        'job_offers'   => ['label' => 'Offres d’emploi', 'module' => 'Recrutement'],
+        'candidates'   => ['label' => 'Banque de CV',    'module' => 'Recrutement'],
+        'applications' => ['label' => 'Candidatures',    'module' => 'Recrutement'],
+        'interviews'   => ['label' => 'Entretiens',      'module' => 'Recrutement'],
+
+        // Interview
+        'interviews' => ['label' => 'Entretiens', 'module' => 'Recrutement'],
+
 
         // Missions
         'mission_orders' => ['label' => 'Ordres de mission', 'module' => 'Missions'],
-
-
 
         // Administration
         'users'       => ['label' => 'Utilisateurs',     'module' => 'Administration'],
@@ -75,6 +80,7 @@ return [
         'dashboard_department' => ['label' => 'Dashboard Département', 'module' => 'Tableaux de bord'],
         'dashboard_hr'         => ['label' => 'Dashboard RH',          'module' => 'Tableaux de bord'],
         'dashboard_payroll'    => ['label' => 'Dashboard Paie',        'module' => 'Tableaux de bord'],
+        
 
     ],
 ];

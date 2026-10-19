@@ -1,0 +1,4 @@
+// ===== routes/console.php (là où est déjà planifiée la commande des anniversaires) =====
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('recruitment:purge-expired')->dailyAt('02:00');

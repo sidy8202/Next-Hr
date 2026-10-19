@@ -1,0 +1,24 @@
+// ===== config/permissions.php =====
+// Dans le tableau 'resources' (même format que les ressources existantes : label + module) :
+'job_offers'   => ['label' => 'Offres d’emploi', 'module' => 'Recrutement'],
+'candidates'   => ['label' => 'Banque de CV',    'module' => 'Recrutement'],
+'applications' => ['label' => 'Candidatures',    'module' => 'Recrutement'],
+
+// Si votre config contient d'autres clés par ressource (ex. 'scoped' => false), copiez-les depuis 'departments'.
+// Ces trois ressources ne sont PAS à porter "own/team" : ne les ajoutez pas à permission_meta.employee_scoped.
+
+
+// ===== config/permission_meta.php =====
+// Dans le tableau 'templates', un nouveau modèle « Recruteur » (lettres : c=créer, r=lire, u=modifier, d=supprimer) :
+'recruiter' => [
+    'label' => 'Recruteur',
+    'permissions' => [
+        'job_offers'   => ['crud', 'all'],
+        'candidates'   => ['crud', 'all'],
+        'applications' => ['cru',  'all'],
+        'departments'  => ['r',    'all'],
+        'positions'    => ['r',    'all'],
+    ],
+],
+// Si votre modèle existant « RH » ou « Administrateur » doit aussi gérer le recrutement,
+// ajoutez-y les trois lignes job_offers / candidates / applications.

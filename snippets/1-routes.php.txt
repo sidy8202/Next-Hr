@@ -1,0 +1,19 @@
+// ===== routes/web.php =====
+// 1) En haut du fichier, avec les autres "use" :
+use App\Http\Controllers\CandidateCvController;
+use App\Livewire\Recruitment\CandidateForm;
+use App\Livewire\Recruitment\CandidateIndex;
+use App\Livewire\Recruitment\JobOfferForm;
+use App\Livewire\Recruitment\JobOfferIndex;
+use App\Livewire\Recruitment\JobOfferShow;
+
+// 2) Dans le groupe de routes AUTHENTIFIÉES existant (le même que celui de /droits) :
+Route::get('/recrutement/candidats', CandidateIndex::class)->name('candidates.index');
+Route::get('/recrutement/candidats/nouveau', CandidateForm::class)->name('candidates.create');
+Route::get('/recrutement/candidats/{candidate}/modifier', CandidateForm::class)->name('candidates.edit');
+Route::get('/recrutement/candidats/{candidate}/cv', CandidateCvController::class)->name('candidates.cv');
+
+Route::get('/recrutement/offres', JobOfferIndex::class)->name('job-offers.index');
+Route::get('/recrutement/offres/nouvelle', JobOfferForm::class)->name('job-offers.create');
+Route::get('/recrutement/offres/{jobOffer}', JobOfferShow::class)->name('job-offers.show');
+Route::get('/recrutement/offres/{jobOffer}/modifier', JobOfferForm::class)->name('job-offers.edit');

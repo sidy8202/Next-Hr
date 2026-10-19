@@ -27,7 +27,7 @@
             </main>
         </div>
     </div>
-    <x-ui. toast/>
+    <x-ui.toast :flash="session('notify')" />
     @livewireScripts
 </body>
 </html>

@@ -76,6 +76,16 @@ return [
             'kind'      => 'received',
             'sensitive' => true,
         ],
+        'cv' => [
+            'label'     => 'CV',
+            'kind'      => 'received',
+            'sensitive' => false,
+        ],
+        'other' => [
+            'label'     => 'Autre document',
+            'kind'      => 'received',
+            'sensitive' => false,
+        ],
 
     ],
 
