@@ -81,6 +81,11 @@ return [
             'kind'      => 'received',
             'sensitive' => false,
         ],
+        'leave_sheet' => [
+            'label' => 'Fiche de congé',
+            'kind' => 'issued',
+            'sensitive' => false,
+        ],
         'other' => [
             'label'     => 'Autre document',
             'kind'      => 'received',

@@ -87,6 +87,9 @@
                     <tr wire:key="cand-{{ $c->id }}">
                         <td class="px-4 py-3">
                             <p class="font-medium">{{ $c->full_name }}
+                                @if (! $c->bank_consent)
+                                    <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900 dark:bg-amber-500/20 dark:text-amber-200" title="Le candidat n’a pas accepté la conservation pour d’autres offres">Cette offre uniquement</span>
+                                @endif
                                 @if ($c->status !== 'active')
                                     <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-500/20 dark:text-slate-200">{{ config('recruitment.candidate_statuses.'.$c->status, $c->status) }}</span>
                                 @endif
@@ -113,7 +116,7 @@
                         <td class="px-4 py-3 text-right">
                             <div class="flex flex-wrap justify-end gap-2 text-xs">
                                 @if ($c->cv_path)
-                                    <a href="{{ route('candidates.cv', $c) }}" class="rounded border border-line px-2 py-1 hover:bg-surface-muted">CV</a>
+                                    <x-document-actions :view="route('candidates.cv.view', $c)" :download="route('candidates.cv', $c)" :ext="pathinfo($c->cv_path, PATHINFO_EXTENSION)" :name="'CV — '.$c->full_name" />
                                 @endif
                                 @if (auth()->user()->canDo('update', 'candidates'))
                                     <a href="{{ route('candidates.edit', $c) }}" wire:navigate class="rounded border border-line px-2 py-1 hover:bg-surface-muted">Modifier</a>

@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\ApplicationEvent;
 use App\Models\Candidate;
 use App\Models\JobOffer;
+use App\Support\MatchScorer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -23,15 +24,26 @@ class ApplicationService
             throw ValidationException::withMessages(['candidate' => 'Ce profil n’est pas actif : réactivez-le avant de le proposer.']);
         }
 
+        if (! $candidate->bank_consent) {
+            throw ValidationException::withMessages([
+                'candidate' => 'Ce candidat n’a pas accepté que son CV soit conservé pour d’autres offres.',
+            ]);
+        }
+
         return DB::transaction(function () use ($offer, $candidate) {
             if (Application::where('job_offer_id', $offer->id)->where('candidate_id', $candidate->id)->exists()) {
                 throw ValidationException::withMessages(['candidate' => 'Ce profil a déjà postulé à cette offre.']);
             }
 
+            $match = MatchScorer::score($offer, $candidate);
+
             $application = Application::create([
                 'job_offer_id' => $offer->id,
                 'candidate_id' => $candidate->id,
                 'stage' => 'new',
+                'channel' => 'internal',
+                'match_score' => $match['score'],
+                'match_details' => $match['details'],
                 'applied_at' => now(),
                 'stage_changed_at' => now(),
                 'created_by' => auth()->id(),
@@ -105,6 +117,24 @@ class ApplicationService
 
             return $app->fresh();
         });
+    }
+
+    /** Recalcule le score de correspondance de toutes les candidatures d'une offre (après un changement de critères). */
+    public function rescore(JobOffer $offer): int
+    {
+        $count = 0;
+
+        Application::where('job_offer_id', $offer->id)->with('candidate')->get()->each(function ($application) use ($offer, &$count) {
+            if (! $application->candidate) {
+                return;
+            }
+
+            $match = MatchScorer::score($offer, $application->candidate);
+            $application->update(['match_score' => $match['score'], 'match_details' => $match['details']]);
+            $count++;
+        });
+
+        return $count;
     }
 
     public function rate(Application $application, int $rating): Application

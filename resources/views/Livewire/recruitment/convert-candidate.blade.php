@@ -39,8 +39,8 @@
                         <label class="mb-1 block text-sm font-medium">Genre</label>
                         <select wire:model="gender" class="input">
                             <option value="">Choisir…</option>
-                            <option value="male">Homme</option>
-                            <option value="female">Femme</option>
+                            <option value="M">Homme</option>
+                            <option value="F">Femme</option>
                         </select>
                         @error('gender')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                     </div>
@@ -109,7 +109,7 @@
                     <div>
                         <label class="mb-1 block text-sm font-medium">Type de contrat</label>
                         <select wire:model.live="contract_type" class="input">
-                            @foreach (config('recruitment.contract_types') as $key => $label)<option value="{{ $key }}">{{ $label }}</option>@endforeach
+                            <option value="CDI">CDI</option><option value="CDD">CDD</option><option value="STAGE">Stage</option>
                         </select>
                         @error('contract_type')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                     </div>

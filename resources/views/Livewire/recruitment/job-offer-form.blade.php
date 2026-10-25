@@ -40,71 +40,11 @@
                     <label for="vacancies" class="mb-1 block text-sm font-medium">Nombre de postes</label>
                     <input id="vacancies" type="number" min="1" wire:model="vacancies" class="input">
                     @error('vacancies')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
-                </div> 
-                                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    {{-- Date limite : 50 % --}}
-                    <div class="min-w-0">
-                        <label for="closes_at" class="mb-1 block text-sm font-medium">
-                            Date limite de candidature
-                        </label>
-
-                        <input
-                            id="closes_at"
-                            type="date"
-                            wire:model="closes_at"
-                            class="input w-full"
-                        >
-
-                        @error('closes_at')
-                            <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Options de publication : 50 % --}}
-                    <div class="grid grid-cols-3 items-center gap-3 min-w-0">
-
-                        <div class="flex min-w-0 items-center gap-2">
-                            <input
-                                id="is_internal"
-                                type="checkbox"
-                                wire:model.live="is_internal"
-                                class="shrink-0 rounded border-line text-brand-600 focus:ring-brand-500"
-                            >
-                            <label for="is_internal"
-                                class="text-sm font-medium whitespace-nowrap cursor-pointer">
-                                Publication interne
-                            </label>
-                        </div>
-
-                        <div class="flex min-w-0 items-center gap-2">
-                            <input
-                                id="is_external"
-                                type="checkbox"
-                                wire:model.live="is_external"
-                                class="shrink-0 rounded border-line text-brand-600 focus:ring-brand-500"
-                            >
-                            <label for="is_external"
-                                class="text-sm font-medium whitespace-nowrap cursor-pointer">
-                                Publication externe
-                            </label>
-                        </div>
-
-                        <div class="flex min-w-0 items-center gap-2">
-                            <input
-                                id="is_both"
-                                type="checkbox"
-                                wire:click="toggleBoth"
-                                class="shrink-0 rounded border-line text-brand-600 focus:ring-brand-500"
-                            >
-                            <label for="is_both"
-                                class="text-sm font-medium whitespace-nowrap cursor-pointer">
-                                Les deux
-                            </label>
-                        </div>
-
-                    </div>
+                </div>
+                <div>
+                    <label for="closes_at" class="mb-1 block text-sm font-medium">Date limite de candidature</label>
+                    <input id="closes_at" type="date" wire:model="closes_at" class="input">
+                    @error('closes_at')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </div>
             </div>
         </section>
@@ -142,6 +82,25 @@
                     <label for="requirements" class="mb-1 block text-sm font-medium">Exigences et compétences</label>
                     <textarea id="requirements" rows="4" wire:model="requirements" class="input"></textarea>
                     @error('requirements')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </div>
+            </div>
+        </section>
+
+        <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+            <h3 class="mb-4 text-sm font-semibold">Classement et diffusion</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="required_skills" class="mb-1 block text-sm font-medium">Compétences recherchées (séparées par des virgules)</label>
+                    <input id="required_skills" type="text" wire:model="required_skills" class="input" placeholder="excel, réseaux, sql">
+                    <p class="mt-1 text-xs text-ink-muted">Avec le domaine, les études et l’expérience, elles servent à calculer un score de correspondance pour chaque candidature.</p>
+                    @error('required_skills')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="flex items-start gap-2 text-sm">
+                        <input type="checkbox" wire:model="is_public" class="mt-1">
+                        <span><strong>Offre externe</strong> : l’afficher sur la page publique de candidature de l’entreprise (une fois l’offre publiée). Sans cette case, l’offre reste interne à l’application.</span>
+                    </label>
+                    @error('is_public')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                 </div>
             </div>
         </section>

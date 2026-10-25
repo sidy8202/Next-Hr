@@ -84,9 +84,10 @@ class EmployeeService
     public function update(Employee $employee, array $person): Employee
     {
         $stored = [];
+        $created = [];
 
         try {
-            DB::transaction(function () use ($employee, $person, &$stored) {
+            DB::transaction(function () use ($employee, $person, &$stored, &$created) {
                 $payload = $this->identityAttributes($person) + [
                     'department_id' => (int) $person['department_id'],
                     'position_id' => (int) $person['position_id'],
@@ -103,13 +104,16 @@ class EmployeeService
                     AuditLogger::log('updated', 'employees', $employee->id, array_intersect_key($old, $dirty), $dirty);
                 }
 
-                $this->storeDocuments($employee, $person['documents'] ?? [], $stored);
+                $this->saveLeaveRate($employee, $person);
+                $created = $this->storeDocuments($employee, $person['documents'] ?? [], $stored);
             });
         } catch (Throwable $e) {
             $this->deleteFiles($stored);
 
             throw $e;
         }
+
+        $this->notifyDocuments($employee, $created);
 
         return $employee;
     }
@@ -163,6 +167,8 @@ class EmployeeService
             'status' => 'active',
         ]);
 
+        $this->saveLeaveRate($employee, $p);
+
         Contract::create([
             'employee_id' => $employee->id,
             'type' => $type,
@@ -175,6 +181,23 @@ class EmployeeService
         ]);
 
         return $employee;
+    }
+
+    /**
+     * Jours de congé acquis par mois (ex. 2,5). Vide = valeur par défaut de l'entreprise.
+     * Enregistré directement : l'acquisition court à partir de la date d'embauche.
+     */
+    private function saveLeaveRate(Employee $employee, array $p): void
+    {
+        if (! array_key_exists('leave_days_per_month', $p)) {
+            return;
+        }
+
+        $v = $p['leave_days_per_month'];
+
+        Employee::whereKey($employee->id)->update([
+            'leave_days_per_month' => ($v === '' || $v === null) ? null : round((float) $v, 2),
+        ]);
     }
 
     private function createAccount(Employee $employee, array $p): array
@@ -230,9 +253,15 @@ class EmployeeService
         return $out;
     }
 
-    /** Range les fichiers dans le dossier PRIVÉ (storage/app/private) et crée les lignes « documents ». */
-    private function storeDocuments(Employee $employee, array $documents, array &$stored): void
+    /**
+     * Range les fichiers dans le dossier PRIVÉ (storage/app/private) et crée les lignes « documents ».
+     *
+     * @return array<int, Document> les documents créés
+     */
+    private function storeDocuments(Employee $employee, array $documents, array &$stored): array
     {
+        $created = [];
+
         foreach ($documents as $doc) {
             if (empty($doc['file'])) {
                 continue;
@@ -246,13 +275,34 @@ class EmployeeService
             );
             $stored[] = $path;
 
-            Document::create([
+            $created[] = Document::create([
                 'employee_id' => $employee->id,
                 'type' => $doc['type'],
                 'title' => trim((string) ($doc['title'] ?? '')) ?: (config("documents.types.{$doc['type']}.label") ?? $doc['type']),
                 'file_path' => $path,
                 'uploaded_by' => auth()->id(),
             ]);
+        }
+
+        return $created;
+    }
+
+    /** Chaque document ajouté au dossier d'un employé par quelqu'un d'autre le notifie (dans l'application et par email). */
+    private function notifyDocuments(Employee $employee, array $documents): void
+    {
+        if (! $documents || (int) auth()->user()?->employee_id === $employee->id) {
+            return;
+        }
+
+        $notifier = app(EmployeeNotifier::class);
+
+        foreach ($documents as $document) {
+            $notifier->notifyEmployee(
+                $employee,
+                'Nouveau document dans votre dossier',
+                'Le document « '.$document->title.' » a été ajouté à votre dossier.',
+                route('employees.show', $employee->id).'?onglet=documents'
+            );
         }
     }
 

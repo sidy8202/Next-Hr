@@ -14,8 +14,8 @@ class JobOffer extends Model
 
     protected $fillable = [
         'reference', 'title', 'department_id', 'position_id', 'profile_category', 'contract_type',
-        'description', 'requirements', 'min_education_level', 'is_external', 'is_internal','min_experience_years', 'vacancies',
-        'status', 'published_at', 'closes_at', 'created_by',
+        'description', 'requirements', 'min_education_level', 'min_experience_years', 'vacancies',
+        'status', 'published_at', 'closes_at', 'created_by', 'is_public', 'required_skills',
     ];
 
     protected function casts(): array
@@ -25,6 +25,8 @@ class JobOffer extends Model
             'vacancies' => 'integer',
             'published_at' => 'datetime',
             'closes_at' => 'date',
+            'is_public' => 'boolean',
+            'required_skills' => 'array',
         ];
     }
 

@@ -19,6 +19,7 @@ return [
         'employees', 'contracts', 'internships', 'documents', 'documents_sensitive', 'document_requests',
         'leave_balances', 'leave_requests', 'absence_permissions', 'payslips',
         'terminations', 'explanation_letters', 'insurance_enrollments',
+        'leave_requests', 'overtime', // (portées own / team / all)
     ],
 
     'templates' => [
@@ -32,12 +33,21 @@ return [
             ],
         ],
 
+         'employee_leaves' => [
+            'label' => 'Employé (congés)',
+            'permissions' => [
+                'leave_requests' => ['cr', 'own'],
+                'overtime'       => ['cr', 'own'],
+            ],
+        ],
+
         'department_head' => [
             'label' => 'Chef de département',
             'permissions' => [
                 'employees' => ['r', 'team'], 'leave_requests' => ['cru', 'team'], 'leave_balances' => ['r', 'team'],
                 'absence_permissions' => ['cru', 'team'], 'documents' => ['r', 'team'], 'document_requests' => ['cr', 'team'],
                 'explanation_letters' => ['cr', 'team'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'],
+                'overtime' => ['cr', 'team'],
                 'dashboard_department' => ['r', 'all'],
             ],
         ],
@@ -53,7 +63,9 @@ return [
                 'insurances' => ['cru', 'all'], 'insurance_enrollments' => ['cru', 'all'],
                 'job_openings' => ['cru', 'all'], 'candidates' => ['cru', 'all'], 'candidate_categories' => ['cru', 'all'],
                 'job_applications' => ['cru', 'all'], 'dashboard_hr' => ['r', 'all'],
-                    
+                'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
+
+
             ],
         ],
 

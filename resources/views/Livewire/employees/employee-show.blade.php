@@ -101,19 +101,11 @@
                             <div class="flex items-center gap-4">
                                 <span class="text-xs text-ink-muted">{{ $doc->created_at?->format('d/m/Y') }}</span>
                                 <div class="flex items-center gap-2">
-                                    @if ($isViewable)
-                                        <a href="{{ route('employees.documents.show', [$employee->id, $doc->id]) }}" 
-                                           target="_blank" 
-                                           class="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:underline dark:text-brand-300"
-                                           title="Aperçu du document">
-                                            <x-heroicon-o-eye class="size-4" /> Voir
-                                        </a>
-                                    @endif
-                                    <a href="{{ route('employees.documents.download', [$employee->id, $doc->id]) }}" 
-                                       class="inline-flex items-center gap-1 text-xs font-medium text-ink-muted hover:text-ink"
-                                       title="Télécharger">
-                                        <x-heroicon-o-arrow-down-tray class="size-4" /> Telecharger
-                                    </a>
+                                    <x-document-actions
+                                    :view="route('employees.documents.view', [$employee, $doc])"
+                                    :download="route('employees.documents.download', [$employee, $doc])"
+                                    :ext="pathinfo($doc->file_path, PATHINFO_EXTENSION)"
+                                    :name="$doc->title ?: $doc->type" />
                                 </div>
                             </div>
                         </li>

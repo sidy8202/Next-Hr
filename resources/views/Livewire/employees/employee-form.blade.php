@@ -139,6 +139,14 @@
                             <x-ui.field label="Durée (mois)" name="form.duration_months" required><input id="form.duration_months" type="number" min="1" max="60" wire:model="form.duration_months" class="input"></x-ui.field>
                         @endif
                         <x-ui.field label="Salaire de base" name="form.base_salary" required><input id="form.base_salary" type="number" min="0" wire:model="form.base_salary" class="input"></x-ui.field>
+
+                        <div>
+                            <label for="leave_days_per_month" class="mb-1 block text-sm font-medium">Jours de congé acquis par mois</label>
+                            <input id="leave_days_per_month" type="number" step="0.25" min="0" max="10" wire:model="form.leave_days_per_month" class="input" placeholder="2,5">
+                            <p class="mt-1 text-xs text-ink-muted">Cumulé à partir de la date d’embauche. Vide = valeur par défaut de l’entreprise (2,5).</p>
+                            @error('form.leave_days_per_month')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                        </div>
+                        
                     @endif
                 </div>
                 @unless ($employeeId)

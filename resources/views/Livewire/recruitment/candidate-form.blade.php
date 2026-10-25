@@ -116,7 +116,8 @@
             <div class="space-y-4">
                 @if ($candidate?->cv_path)
                     <div class="flex flex-wrap items-center gap-3 text-sm">
-                        <a href="{{ route('candidates.cv', $candidate) }}" class="rounded border border-line px-2 py-1 hover:bg-surface-muted">CV actuel : {{ $candidate->cv_original_name ?: 'télécharger' }}</a>
+                        <span>CV actuel : {{ $candidate->cv_original_name ?: 'document' }}</span>
+                        <x-document-actions :view="route('candidates.cv.view', $candidate)" :download="route('candidates.cv', $candidate)" :ext="pathinfo($candidate->cv_path, PATHINFO_EXTENSION)" :name="'CV — '.$candidate->full_name" />
                         <label class="flex items-center gap-2"><input type="checkbox" wire:model="remove_cv"> Supprimer le CV</label>
                     </div>
                 @endif

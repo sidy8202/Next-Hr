@@ -68,6 +68,7 @@ class EmployeeForm extends Component
                 'emergency_contact_phone' => (string) $employee->emergency_contact_phone,
                 'department_id' => $employee->department_id, 'position_id' => $employee->position_id,
                 'manager_id' => $employee->manager_id, 'hire_date' => $employee->hire_date?->toDateString() ?? '',
+                'leave_days_per_month' => $employee->leave_days_per_month !== null ? (string) $employee->leave_days_per_month : '',
             ];
 
             return;
@@ -86,7 +87,7 @@ class EmployeeForm extends Component
             'phone' => '', 'work_email' => '', 'personal_email' => '', 'address' => '',
             'emergency_contact_name' => '', 'emergency_contact_phone' => '',
             'department_id' => null, 'position_id' => null, 'manager_id' => null, 'hire_date' => now()->toDateString(),
-            'contract_type' => 'CDI', 'duration_months' => '', 'base_salary' => '',
+            'contract_type' => 'CDI', 'duration_months' => '', 'base_salary' => '','leave_days_per_month' => '',
             'create_account' => false, 'login_email_source' => 'work', 'send_work' => true, 'send_personal' => true,
         ];
     }
@@ -157,7 +158,7 @@ class EmployeeForm extends Component
             'form.department_id' => 'département', 'form.position_id' => 'poste', 'form.hire_date' => "date d'embauche",
             'form.contract_type' => 'type de contrat', 'form.duration_months' => 'durée du contrat', 'form.base_salary' => 'salaire',
             'form.work_email' => 'email professionnel', 'form.personal_email' => 'email personnel',
-            'form.children_count' => "nombre d'enfants", 'form.manager_id' => 'manager',
+            'form.children_count' => "nombre d'enfants", 'form.manager_id' => 'manager','form.leave_days_per_month' => 'jours de congé par mois',
             'docs.*.type' => 'type de pièce', 'docs.*.file' => 'fichier', 'docs.*.title' => 'libellé',
         ];
     }
@@ -186,6 +187,7 @@ class EmployeeForm extends Component
             'form.address' => ['nullable', 'string', 'max:255'],
             'form.emergency_contact_name' => ['nullable', 'string', 'max:255'],
             'form.emergency_contact_phone' => ['nullable', 'string', 'max:30'],
+            'form.leave_days_per_month' => ['nullable', 'numeric', 'between:0,10'],
         ];
     }
 

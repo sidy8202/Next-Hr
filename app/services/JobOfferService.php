@@ -107,7 +107,17 @@ class JobOfferService
             'min_experience_years' => round(max(0, (float) ($d['min_experience_years'] ?? 0)), 1),
             'vacancies' => max(1, (int) ($d['vacancies'] ?? 1)),
             'closes_at' => $none($d['closes_at'] ?? null),
+            'required_skills' => $this->skills($d['required_skills'] ?? ''),
+            'is_public' => (bool) ($d['is_public'] ?? false),
         ];
+    }
+
+    /** « Excel, Réseaux ; SQL » → ['excel', 'réseaux', 'sql'] */
+    private function skills(array|string|null $raw): array
+    {
+        $items = is_array($raw) ? $raw : preg_split('/[,;\n]+/', (string) $raw);
+
+        return collect($items)->map(fn ($s) => mb_strtolower(trim((string) $s)))->filter()->unique()->take(30)->values()->all();
     }
 
     /** OFF-2026-001, OFF-2026-002… par entreprise (la contrainte d'unicité protège d'un doublon). */

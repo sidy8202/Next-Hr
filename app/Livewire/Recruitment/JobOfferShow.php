@@ -25,6 +25,9 @@ class JobOfferShow extends Component
 
     public string $candidateSearch = '';
 
+    /** '' | match | review | low : filtre sur le score de correspondance */
+    public string $matchFilter = '';
+
     /** @var array<int, string> étape choisie par candidature */
     public array $moveTo = [];
 
@@ -59,27 +62,57 @@ class JobOfferShow extends Component
         }
 
         $order = array_keys(config('recruitment.stages'));
+        $short = (int) config('careers.shortlist_threshold');
+        $review = (int) config('careers.review_threshold');
 
         return Application::where('job_offer_id', $this->jobOffer->id)
             ->with('candidate')
             ->get()
-            ->sortBy(fn ($a) => array_search($a->stage, $order, true))
+            ->filter(fn ($a) => match ($this->matchFilter) {
+                'match' => $a->match_score !== null && $a->match_score >= $short,
+                'review' => $a->match_score !== null && $a->match_score >= $review && $a->match_score < $short,
+                'low' => $a->match_score !== null && $a->match_score < $review,
+                default => true,
+            })
+            ->sort(function ($a, $b) use ($order) {
+                // d'abord par étape du pipeline, puis par score décroissant
+                return [array_search($a->stage, $order, true), -($a->match_score ?? -1)]
+                    <=> [array_search($b->stage, $order, true), -($b->match_score ?? -1)];
+            })
             ->values();
     }
 
     #[Computed]
     public function stageCounts(): array
     {
-        $counts = $this->applications->countBy('stage');
+        $counts = Application::where('job_offer_id', $this->jobOffer->id)->get(['stage'])->countBy('stage');
 
         return collect(config('recruitment.stages'))
             ->map(fn ($s, $key) => ['label' => $s['label'], 'count' => $counts->get($key, 0)])
             ->all();
     }
 
+    /** Nombre de candidatures par niveau de correspondance (toutes étapes confondues). */
+    #[Computed]
+    public function bandCounts(): array
+    {
+        $scores = Application::where('job_offer_id', $this->jobOffer->id)->pluck('match_score');
+        $short = (int) config('careers.shortlist_threshold');
+        $review = (int) config('careers.review_threshold');
+        $scored = $scores->filter(fn ($s) => $s !== null);
+
+        return [
+            'all' => $scores->count(),
+            'match' => $scored->filter(fn ($s) => $s >= $short)->count(),
+            'review' => $scored->filter(fn ($s) => $s >= $review && $s < $short)->count(),
+            'low' => $scored->filter(fn ($s) => $s < $review)->count(),
+            'scored' => $scored->count(),
+        ];
+    }
+
     private function availableCandidates()
     {
-        return Candidate::where('status', 'active')
+        return Candidate::where('status', 'active')->where('bank_consent', true)
             ->whereNotIn('id', Application::where('job_offer_id', $this->jobOffer->id)->select('candidate_id'));
     }
 
@@ -181,10 +214,45 @@ class JobOfferShow extends Component
         $this->dispatch('notify', type: 'success', message: 'Statut de l’offre mis à jour.');
     }
 
+    /** Passe en « Présélection » les candidatures « Nouvelle » dont le score atteint le seuil (action volontaire, jamais automatique). */
+    public function shortlistMatching(): void
+    {
+        $this->authorizeAction('update', 'applications');
+
+        $service = app(ApplicationService::class);
+        $count = 0;
+
+        Application::where('job_offer_id', $this->jobOffer->id)
+            ->where('stage', 'new')
+            ->whereNotNull('match_score')
+            ->where('match_score', '>=', (int) config('careers.shortlist_threshold'))
+            ->orderByDesc('match_score')
+            ->get()
+            ->each(function ($application) use ($service, &$count) {
+                $service->move($application, 'screening', 'Présélection : profil correspondant à l’offre (score '.$application->match_score.'/100)');
+                $count++;
+            });
+
+        $this->refreshData();
+        $this->dispatch('notify', type: 'success', message: $count
+            ? "{$count} candidature(s) présélectionnée(s)."
+            : 'Aucune candidature « Nouvelle » n’atteint le seuil de correspondance.');
+    }
+
+    public function recomputeScores(): void
+    {
+        $this->authorizeAction('update', 'applications');
+
+        $count = app(ApplicationService::class)->rescore($this->jobOffer);
+
+        $this->refreshData();
+        $this->dispatch('notify', type: 'success', message: "Score recalculé pour {$count} candidature(s).");
+    }
+
     private function refreshData(): void
     {
         $this->jobOffer->refresh();
-        unset($this->applications, $this->stageCounts, $this->suggestions, $this->searchResults);
+        unset($this->applications, $this->stageCounts, $this->bandCounts, $this->suggestions, $this->searchResults);
     }
 
     public function render()

@@ -26,7 +26,7 @@ return [
             'items' => [
                 ['label' => 'Banque de CV', 'icon' => 'document-text', 'route' => 'candidates.index', 'resource' => 'candidates'],
                 ['label' => 'Offres d\'emploi', 'icon' => 'identification', 'route' => 'job-offers.index', 'resource' => 'job_offers'],
-                ['label' => 'Entretiens', 'icon' => 'calendar', 'route' => 'interviews.index', 'resource' => 'interviews']
+                ['label' => 'Entretiens', 'icon' => 'calendar', 'route' => 'interviews.index', 'resource' => 'interviews'],
             ],
         ],
         [
@@ -36,6 +36,61 @@ return [
                 ['label' => 'Droits d\'accès', 'icon' => 'shield-check', 'route' => 'access.matrix', 'resource' => 'permissions'],
             ],
         ],
+
+        [
+            'label' => 'Gestion des Congés',
+            'icon'  => 'calendar',
+            'items' => [
+                [
+                    'label' => 'Mes congés',
+                    'icon'  => 'user',
+                    'route' => 'leaves.mine',
+                ],
+                [
+                    'label'   => 'À valider',
+                    'icon'    => 'inbox',
+                    'route'   => 'leaves.inbox',
+                    // Le compteur peut être calculé dynamiquement dans la vue ou le ViewComponent
+                    'badge'   => null,
+                ],
+                [
+                    'label'    => 'Toutes les demandes',
+                    'icon'     => 'document-text',
+                    'route'    => 'leaves.index',
+                    'resource' => 'leave_requests',
+                    'action'   => 'read',
+                ],
+                [
+                    'label'    => 'Soldes',
+                    'icon'     => 'scale',
+                    'route'    => 'leaves.balances',
+                    'resource' => 'leave_requests',
+                    'action'   => 'update',
+                ],
+                [
+                    'label'    => 'Absences',
+                    'icon'     => 'clock',
+                    'route'    => 'leaves.absences',
+                    'resource' => 'absences',
+                    'action'   => 'read',
+                ],
+                [
+                    'label'    => 'Jours travaillés',
+                    'icon'     => 'briefcase',
+                    'route'    => 'leaves.overtime',
+                    'resource' => 'overtime',
+                    'action'   => 'read',
+                ],
+                [
+                    'label'    => 'Paramètres congés',
+                    'icon'     => 'cog',
+                    'route'    => 'leaves.settings',
+                    'resource' => 'leave_settings',
+                    'action'   => 'read',
+                ],
+            ],
+        ],
+
         // Les groupes Congés, Paie… seront ajoutés avec leurs pages.
     ],
 ];

@@ -16,7 +16,7 @@ class Candidate extends Model
         'first_name', 'last_name', 'email', 'phone', 'city', 'education_level', 'last_degree',
         'degree_field', 'school', 'graduation_year', 'experience_years', 'current_job_title',
         'profile_category', 'skills', 'source', 'cv_path', 'cv_original_name', 'status', 'notes',
-        'consent_given_at', 'retention_until', 'created_by',
+        'consent_given_at', 'retention_until', 'created_by', 'bank_consent',
     ];
 
     protected function casts(): array
@@ -27,6 +27,7 @@ class Candidate extends Model
             'graduation_year' => 'integer',
             'consent_given_at' => 'datetime',
             'retention_until' => 'date',
+            'bank_consent' => 'boolean',
         ];
     }
 

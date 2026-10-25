@@ -1,11 +1,11 @@
 <?php
+
 namespace Tests\Feature;
 
 use Tests\TestCase;
 
-class MatriculeGeneratorTest extends TestCase
+class PermissionMatrixTest extends TestCase
 {
-
     public function test_chaque_modele_respecte_la_regle_lire(): void
     {
         foreach (config('permission_meta.templates') as $key => $t) {

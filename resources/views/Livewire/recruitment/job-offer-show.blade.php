@@ -47,6 +47,17 @@
         @enderror
     @endforeach
 
+    @if ($jobOffer->is_public && $jobOffer->status === 'open')
+        @php($publicUrl = route('careers.offer', ['slug' => \App\Support\CareerSlug::ensure($jobOffer->company_id), 'reference' => $jobOffer->reference]))
+        <div x-data="{ copied: false }" class="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-sm shadow-sm">
+            <span class="font-medium">Offre publiée sur la page publique</span>
+            <a href="{{ $publicUrl }}" target="_blank" rel="noopener" class="truncate text-indigo-600 underline dark:text-indigo-300">{{ $publicUrl }}</a>
+            <button type="button" @click="navigator.clipboard.writeText('{{ $publicUrl }}'); copied = true; setTimeout(() => copied = false, 2000)" class="rounded-lg border border-line px-2 py-1 text-xs hover:bg-surface-muted" x-text="copied ? 'Lien copié' : 'Copier le lien'"></button>
+        </div>
+    @elseif ($jobOffer->is_public)
+        <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">Cette offre est marquée « externe » : elle apparaîtra sur la page publique dès qu’elle sera publiée (statut « Ouverte »).</p>
+    @endif
+
     {{-- Critères --}}
     <section class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
         <h3 class="mb-3 text-sm font-semibold">Profil recherché</h3>
@@ -103,7 +114,28 @@
 
         {{-- Candidatures --}}
         <section class="space-y-3">
-            <h3 class="text-sm font-semibold">Candidatures ({{ $this->applications->count() }})</h3>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h3 class="text-sm font-semibold">Candidatures ({{ $this->applications->count() }}@if ($matchFilter !== '') sur {{ $this->bandCounts['all'] }}@endif)</h3>
+
+                @if ($this->bandCounts['scored'] > 0)
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <label for="match-filter" class="text-ink-muted">Correspondance</label>
+                        <select id="match-filter" wire:model.live="matchFilter" class="input w-auto py-1 text-xs">
+                            <option value="">Toutes ({{ $this->bandCounts['all'] }})</option>
+                            <option value="match">Correspondent, {{ config('careers.shortlist_threshold') }} et + ({{ $this->bandCounts['match'] }})</option>
+                            <option value="review">À examiner ({{ $this->bandCounts['review'] }})</option>
+                            <option value="low">Correspondent peu ({{ $this->bandCounts['low'] }})</option>
+                        </select>
+                        @if ($canMove)
+                            <button type="button" wire:click="shortlistMatching" wire:confirm="Présélectionner toutes les candidatures « Nouvelle » dont le score atteint {{ config('careers.shortlist_threshold') }} ?" class="rounded-lg bg-indigo-600 px-3 py-1.5 font-semibold text-white hover:bg-indigo-500">Présélectionner les profils qui correspondent</button>
+                            <button type="button" wire:click="recomputeScores" class="rounded-lg border border-line px-3 py-1.5 hover:bg-surface-muted" title="À utiliser après avoir modifié les critères de l’offre">Recalculer les scores</button>
+                        @endif
+                    </div>
+                @endif
+            </div>
+            @if ($this->bandCounts['scored'] === 0 && $this->bandCounts['all'] > 0)
+                <p class="text-xs text-ink-muted">Aucun score : renseignez le domaine, les études, l’expérience ou les compétences recherchées dans l’offre, puis recalculez.</p>
+            @endif
 
             @forelse ($this->applications as $app)
                 @php($next = config('recruitment.stages.'.$app->stage.'.next', []))
@@ -112,14 +144,26 @@
                         <div>
                             <p class="font-medium">{{ $app->candidate?->full_name }}
                                 <span class="ml-1 rounded-full px-2 py-0.5 text-xs {{ $stageStyles[$app->stage] ?? '' }}">{{ $app->stageLabel() }}</span>
+                                @if ($app->match_score !== null)
+                                    @php($band = \App\Support\MatchScorer::band($app->match_score))
+                                    <span class="ml-1 rounded-full px-2 py-0.5 text-xs font-semibold {{ $band['class'] }}" title="{{ implode(' · ', $app->match_details ?? []) }}">{{ $app->match_score }}/100 · {{ $band['label'] }}</span>
+                                @endif
+                                @if ($app->channel === 'portal')
+                                    <span class="ml-1 rounded-full bg-surface-muted px-2 py-0.5 text-xs" title="Reçue par la page publique de candidature">via le portail</span>
+                                @endif
                             </p>
                             <p class="text-xs text-ink-muted">
                                 {{ $app->candidate?->educationLabel() }} · {{ $app->candidate?->seniorityLabel() }}
                                 · postulé le {{ $app->applied_at?->format('d/m/Y') }}
                                 @if ($app->candidate?->cv_path && auth()->user()->canDo('read', 'candidates'))
-                                    · <a href="{{ route('candidates.cv', $app->candidate) }}" class="underline">CV</a>
+                                    · CV <x-document-actions :view="route('candidates.cv.view', $app->candidate)" :download="route('candidates.cv', $app->candidate)" :ext="pathinfo($app->candidate->cv_path, PATHINFO_EXTENSION)" :name="'CV — '.$app->candidate->full_name" />
                                 @endif
                             </p>
+                            @if ($app->cover_letter_path)
+                                <p class="mt-1 text-xs text-ink-muted">Lettre de motivation
+                                    <x-document-actions :view="route('applications.cover.view', $app)" :download="route('applications.cover.download', $app)" :ext="pathinfo($app->cover_letter_path, PATHINFO_EXTENSION)" :name="'Lettre — '.$app->candidate?->full_name" />
+                                </p>
+                            @endif
                             @if ($app->stage === 'rejected' && $app->rejection_reason)
                                 <p class="mt-1 text-xs text-rose-700 dark:text-rose-300">Motif : {{ $app->rejection_reason }}</p>
                             @endif

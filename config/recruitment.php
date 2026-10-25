@@ -48,7 +48,6 @@ return [
         'CDI'        => 'CDI',
         'CDD'        => 'CDD',
         'STAGE'      => 'Stage',
-        'CONSULTANT' => 'Consultance',
     ],
 
     'offer_statuses' => [

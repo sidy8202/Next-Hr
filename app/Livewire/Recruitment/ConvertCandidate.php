@@ -63,7 +63,7 @@ class ConvertCandidate extends Component
         $this->login_email = (string) ($candidate?->email ?? '');
         $this->department_id = $offer?->department_id ?? '';
         $this->position_id = $offer?->position_id ?? '';
-        $this->contract_type = $offer?->contract_type ?? 'CDI';
+        $this->contract_type = in_array($offer?->contract_type, ['CDI', 'CDD', 'STAGE'], true) ? $offer->contract_type : 'CDI';
         $this->hire_date = now()->toDateString();
     }
 
@@ -95,7 +95,7 @@ class ConvertCandidate extends Component
         $companyId = auth()->user()->company_id;
 
         return [
-            'gender' => ['required', Rule::in(['male', 'female'])],
+            'gender' => ['required', Rule::in(['M', 'F'])],
             'birth_date' => ['required', 'date', 'before:today', 'after:1940-01-01'],
             'nationality' => ['nullable', 'string', 'max:100'],
             'national_id' => ['nullable', 'string', 'max:100'],
@@ -105,7 +105,7 @@ class ConvertCandidate extends Component
             'department_id' => ['required', Rule::exists('departments', 'id')->where('company_id', $companyId)],
             'position_id' => ['required', Rule::exists('positions', 'id')->where('department_id', (int) $this->department_id)],
             'hire_date' => ['required', 'date'],
-            'contract_type' => ['required', Rule::in(array_keys(config('recruitment.contract_types')))],
+            'contract_type' => ['required', Rule::in(['CDI', 'CDD', 'STAGE'])],
             'duration_months' => [Rule::requiredIf($this->contract_type !== 'CDI'), 'nullable', 'integer', 'between:1,120'],
             'base_salary' => ['required', 'integer', 'min:0'],
             'create_account' => ['boolean'],
