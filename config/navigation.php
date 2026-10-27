@@ -19,32 +19,19 @@ return [
                 ['label' => 'Départements', 'icon' => 'building-office', 'route' => 'departments.index', 'resource' => 'departments'],
                 ['label' => 'Postes', 'icon' => 'briefcase', 'route' => 'positions.index', 'resource' => 'positions'],
                 ['label' => 'Employés', 'icon' => 'users', 'route' => 'employees.index', 'resource' => 'employees'],
-            ],
-        ],
-        [
-            'label' => 'Recrutement',
-            'items' => [
-                ['label' => 'Banque de CV', 'icon' => 'document-text', 'route' => 'candidates.index', 'resource' => 'candidates'],
-                ['label' => 'Offres d\'emploi', 'icon' => 'identification', 'route' => 'job-offers.index', 'resource' => 'job_offers'],
-                ['label' => 'Entretiens', 'icon' => 'calendar', 'route' => 'interviews.index', 'resource' => 'interviews'],
-            ],
-        ],
-        [
-            'label' => 'Administration',
-            'items' => [
-                ['label' => 'Utilisateurs', 'icon' => 'user-circle', 'route' => 'users.index', 'resource' => 'users'],
-                ['label' => 'Droits d\'accès', 'icon' => 'shield-check', 'route' => 'access.matrix', 'resource' => 'permissions'],
-            ],
-        ],
-
-        [
-            'label' => 'Gestion des Congés',
-            'icon'  => 'calendar',
-            'items' => [
                 [
-                    'label' => 'Mes congés',
-                    'icon'  => 'user',
-                    'route' => 'leaves.mine',
+                    'label'    => 'Affectations',
+                    'icon'     => 'document-text',
+                    'route'    => 'assignments.index',
+                    'resource' => 'assignments',
+                    'action'   => 'read',
+                ],
+                  [
+                    'label'    => 'Absences',
+                    'icon'     => 'clock',
+                    'route'    => 'leaves.absences',
+                    'resource' => 'absences',
+                    'action'   => 'read',
                 ],
                 [
                     'label'   => 'À valider',
@@ -60,6 +47,48 @@ return [
                     'resource' => 'leave_requests',
                     'action'   => 'read',
                 ],
+            ],
+        ],
+        [
+            'label' => 'Recrutement',
+            'items' => [
+                ['label' => 'Banque de CV', 'icon' => 'document-text', 'route' => 'candidates.index', 'resource' => 'candidates'],
+                ['label' => 'Offres d\'emploi', 'icon' => 'identification', 'route' => 'job-offers.index', 'resource' => 'job_offers'],
+                ['label' => 'Entretiens', 'icon' => 'calendar', 'route' => 'interviews.index', 'resource' => 'interviews'],
+            ],
+        ],
+        [
+            'label' => 'Administration',
+            'items' => [
+                ['label' => 'Utilisateurs', 'icon' => 'user-circle', 'route' => 'users.index', 'resource' => 'users'],
+                ['label' => 'Droits d\'accès', 'icon' => 'shield-check', 'route' => 'access.matrix', 'resource' => 'permissions'],
+
+            ],
+        ],
+
+        [
+            'label' => 'Sorties et discipline',
+            'items' => [
+                [
+                    'label'    => 'Demandes Explicatons',
+                    'icon'     => 'document-text',
+                    'route'    => 'explanations.index',
+                    'resource' => 'explanation_letters',
+                    'action'   => 'read',
+                ],
+
+            ],
+        ],
+
+        [
+            'label' => 'Congés et Permissions',
+            'items' => [
+                [
+                    'label' => 'Mes congés',
+                    'icon'  => 'user',
+                    'route' => 'leaves.mine',
+                ],
+
                 [
                     'label'    => 'Soldes',
                     'icon'     => 'scale',
@@ -67,18 +96,19 @@ return [
                     'resource' => 'leave_requests',
                     'action'   => 'update',
                 ],
-                [
-                    'label'    => 'Absences',
-                    'icon'     => 'clock',
-                    'route'    => 'leaves.absences',
-                    'resource' => 'absences',
-                    'action'   => 'read',
-                ],
+
                 [
                     'label'    => 'Jours travaillés',
                     'icon'     => 'briefcase',
                     'route'    => 'leaves.overtime',
                     'resource' => 'overtime',
+                    'action'   => 'read',
+                ],
+                [
+                    'label'    => 'Permission Absences',
+                    'icon'     => 'document-text',
+                    'route'    => 'permissions.index',
+                    'resource' => 'absence_permissions',
                     'action'   => 'read',
                 ],
                 [
@@ -88,6 +118,7 @@ return [
                     'resource' => 'leave_settings',
                     'action'   => 'read',
                 ],
+
             ],
         ],
 

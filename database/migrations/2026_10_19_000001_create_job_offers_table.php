@@ -24,8 +24,6 @@ return new class extends Migration
             $t->unsignedSmallInteger('vacancies')->default(1);
             $t->string('status', 12)->default('draft');
             $t->timestamp('published_at')->nullable();
-            $t->date('closes_at')->nullable();
-            $t->date('closes_at')->nullable();
             $t->boolean('is_internal')->nullable();
             $t->boolean('is_external')->nullable();
             $t->date('closes_at')->nullable();

@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tests\Feature\RecruitmentFixtures;
+use Tests\Feature\Concerns\RecruitmentFixtures;
 use Tests\TestCase;
 
 class InterviewTest extends TestCase

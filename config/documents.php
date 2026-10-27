@@ -86,6 +86,28 @@ return [
             'kind' => 'issued',
             'sensitive' => false,
         ],
+        'permission_sheet' => [
+            'label' => 'Fiche de permission',
+            'kind' => 'issued',
+            'sensitive' => false
+            ],
+        'explanation_request'  => [
+            'label' => 'Demande d’explication',
+            'kind' => 'issued',
+            'sensitive' => true
+            ],
+        'explanation_response' => [
+            'label' => 'Réponse à une demande d’explication',
+            'kind' => 'issued',
+            'sensitive' => true
+            ],
+        'explanation_decision' => [
+            'label' => 'Décision disciplinaire',
+            'kind' => 'issued',
+            'sensitive' => true
+            ],
+
+
         'other' => [
             'label'     => 'Autre document',
             'kind'      => 'received',

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Livewire\Leaves\Balances;
 use App\Models\Delegation;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\Permission;
@@ -31,26 +32,43 @@ class LeaveAccessTest extends TestCase
         ]);
     }
 
-    public function test_un_droit_modifier_limite_a_mes_donnees_ne_donne_pas_acces_aux_soldes_de_tous(): void
+    public function test_sans_le_droit_sur_les_soldes_la_page_est_interdite(): void
     {
         $this->makeCompanyContext();
-        $employee = $this->makeEmployee();
-        $user = $this->makeAccount($employee);
-        $this->grant($user, 'leave_requests', 'cru', 'own');
+        $user = $this->makeAccount($this->makeEmployee());
+        $this->grant($user, 'leave_requests', 'cru', 'own'); // un droit sur les DEMANDES ne donne pas accès aux SOLDES
 
-        $this->assertFalse(LeaveVisibility::isHr($user, 'leave_requests'));
         Livewire::actingAs($user)->test(Balances::class)->assertForbidden();
     }
 
-    public function test_la_rh_avec_la_portee_tout_accede_aux_soldes(): void
+    public function test_la_rh_avec_la_portee_tout_voit_et_modifie_les_soldes(): void
     {
         $this->makeCompanyContext();
-        $employee = $this->makeEmployee();
-        $user = $this->makeAccount($employee);
-        $this->grant($user, 'leave_requests', 'cru', 'all');
+        $other = $this->makeEmployee();
+        $user = $this->makeAccount($this->makeEmployee());
+        $this->grant($user, 'leave_balances', 'cru', 'all');
 
-        $this->assertTrue(LeaveVisibility::isHr($user, 'leave_requests'));
-        Livewire::actingAs($user)->test(Balances::class)->assertOk();
+        $this->assertTrue(LeaveVisibility::isHr($user, 'leave_balances'));
+        Livewire::actingAs($user)->test(Balances::class)->assertOk()->assertSee($other->last_name)
+            ->set('rates.'.$other->id, 3)->call('saveRate', $other->id)->assertHasNoErrors();
+    }
+
+    public function test_un_chef_voit_les_soldes_de_son_equipe_sans_pouvoir_les_modifier(): void
+    {
+        $this->makeCompanyContext();
+        $manager = $this->makeEmployee();
+        Department::whereKey($this->dept->id)->update(['head_id' => $manager->id]);
+        $member = $this->makeEmployee();     // son équipe
+        $stranger = $this->makeEmployee(['first_name' => 'Zzz', 'last_name' => 'Etranger']);
+        Employee::whereKey($stranger->id)->update(['manager_id' => null]);
+        $uManager = $this->makeAccount($manager);
+        $this->grant($uManager, 'leave_balances', 'r', 'team');
+
+        $this->assertFalse(LeaveVisibility::isHr($uManager, 'leave_balances'));
+
+        Livewire::actingAs($uManager)->test(Balances::class)->assertOk()
+            ->assertSee($member->last_name)->assertDontSee('Etranger')
+            ->call('saveRate', $member->id)->assertForbidden();
     }
 
     public function test_un_simple_employe_n_accede_pas_aux_soldes_ni_ne_valide_a_l_etape_rh(): void

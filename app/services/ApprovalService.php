@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Approvals\ApprovalHandler;
 use App\Models\ApprovalStep;
+use App\Models\Assignment;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
@@ -89,7 +90,20 @@ class ApprovalService
         // 2) Le module « Délégations » existant, si ses colonnes correspondent à config/approvals.php
         $delegates = array_merge($delegates, $this->configuredDelegates($manager));
 
+        // 3) Les affectations : qui fait fonction de chef du département, et le supérieur de l'affectation de l'employé
+        $delegates = array_merge($delegates, $this->assignmentApprovers($employee));
+
         return ['manager' => $manager, 'delegates' => array_values(array_unique($delegates))];
+    }
+
+    /** Qui fait fonction de chef dans le département de l'employé, et son supérieur d'affectation (s'il peut valider). */
+    private function assignmentApprovers(Employee $employee): array
+    {
+        $acting = Assignment::active()->where('acts_as_head', true)->where('department_id', $employee->department_id)->pluck('employee_id');
+        $managers = Assignment::active()->where('employee_id', $employee->id)->where('manager_validates', true)
+            ->whereNotNull('reports_to_employee_id')->pluck('reports_to_employee_id');
+
+        return $acting->merge($managers)->map(fn ($id) => (int) $id)->unique()->values()->all();
     }
 
     private function configuredDelegates(Employee $manager): array

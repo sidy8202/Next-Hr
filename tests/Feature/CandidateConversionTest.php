@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
-use Tests\Feature\RecruitmentFixtures;
+use Tests\Feature\Concerns\RecruitmentFixtures;
 use Tests\TestCase;
 
 class CandidateConversionTest extends TestCase

@@ -5,7 +5,8 @@ return [
     'handlers' => [
         'leave' => \App\Approvals\LeaveHandler::class,
         'overtime' => \App\Approvals\OvertimeHandler::class,
-        // lot 11 : 'permission', 'mission', …
+        'permission' => \App\Approvals\PermissionHandler::class,
+        // plus tard : 'mission', …
     ],
 
     // La RH peut valider à la place du chef de département (absent, sans compte, sans intérimaire). L'étape est alors marquée « RH à la place du chef ».

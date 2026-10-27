@@ -38,6 +38,17 @@
                         <x-document-actions :view="route('leaves.attachment.view', $subject->id)" :download="route('leaves.attachment', $subject->id)" :ext="pathinfo($subject->attachment_path, PATHINFO_EXTENSION)" :name="'Justificatif — '.$employee?->full_name" />
                     </p>
                 @endif
+            @elseif ($step->approvable_type === 'permission')
+                @if ($subject->reason)<p class="whitespace-pre-line text-sm text-ink-muted">{{ $subject->reason }}</p>@endif
+                <p class="text-xs text-ink-muted">Sans retenue : {{ $fmt($subject->free_days) }} j · Retiré du congé : {{ $fmt($subject->deducted_days) }} j @if ($subject->unpaid_days > 0) · Non payé : {{ $fmt($subject->unpaid_days) }} j @endif</p>
+                @if ($subject->exceeds_balance)
+                    <p class="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-200"><strong>Solde de congé dépassé (exception).</strong> Motif de l’employé : {{ $subject->exception_reason }}</p>
+                @endif
+                @if ($subject->attachment_path)
+                    <p class="text-xs text-ink-muted">Justificatif
+                        <x-document-actions :view="route('permissions.attachment.view', $subject->id)" :download="route('permissions.attachment', $subject->id)" :ext="pathinfo($subject->attachment_path, PATHINFO_EXTENSION)" :name="'Justificatif — '.$employee?->full_name" />
+                    </p>
+                @endif
             @elseif ($step->approvable_type === 'overtime')
                 @if ($subject->reason)<p class="text-sm text-ink-muted">{{ $subject->reason }}</p>@endif
                 @if ($step->kind === 'hr')

@@ -25,6 +25,10 @@ return [
         'departments' => ['label' => 'Départements', 'module' => 'Organisation'],
         'positions'   => ['label' => 'Postes',       'module' => 'Organisation'],
         'delegations' => ['label' => 'Délégations',  'module' => 'Organisation'],
+        'assignments' => ['label' => 'Affectations et intérims', 'module' => 'Organisation'],
+        'explanations' => ['label' => 'Demande Explications', 'module' => 'Organisation'],
+
+
 
         // Contrats et documents
         'contracts'          => ['label' => 'Contrats',              'module' => 'Contrats et documents'],
@@ -67,7 +71,7 @@ return [
         'applications' => ['label' => 'Candidatures',    'module' => 'Recrutement'],
         'interviews'   => ['label' => 'Entretiens',      'module' => 'Recrutement'],
         'page candidature' => ['label' => 'Page publique de candidature','module' => 'Recrutement'],
-         
+
 
         // Missions
         'mission_orders' => ['label' => 'Ordres de mission', 'module' => 'Missions'],
@@ -82,7 +86,7 @@ return [
         'dashboard_department' => ['label' => 'Dashboard Département', 'module' => 'Tableaux de bord'],
         'dashboard_hr'         => ['label' => 'Dashboard RH',          'module' => 'Tableaux de bord'],
         'dashboard_payroll'    => ['label' => 'Dashboard Paie',        'module' => 'Tableaux de bord'],
-        
+
 
     ],
 ];

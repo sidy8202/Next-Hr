@@ -14,3 +14,4 @@ Schedule::command('app:send-birthday-notifications')->hourly();
 
 Schedule::command('recruitment:purge-expired')->dailyAt('02:00');
 Schedule::command('leaves:accrue')->dailyAt('01:00');
+Schedule::command('explanations:remind')->dailyAt('08:00');

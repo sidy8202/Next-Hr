@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Concerns;
 
 use App\Models\Candidate;
 use App\Models\Company;

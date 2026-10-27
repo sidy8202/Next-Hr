@@ -7,11 +7,18 @@ use App\Http\Controllers\CandidateCvController;
 use App\Http\Controllers\CareersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeDocumentController;
+use App\Http\Controllers\ExplanationFileController;
 use App\Http\Controllers\LeaveSheetController;
+use App\Http\Controllers\PermissionFileController;
 use App\Livewire\Access\AccessMatrix;
 use App\Livewire\Departments\DepartmentForm;
 use App\Livewire\Departments\DepartmentIndex;
 use App\Livewire\Departments\DepartmentShow;
+use App\Livewire\Assignments\AssignmentIndex;
+use App\Livewire\Discipline\ExplanationForm;
+use App\Livewire\Discipline\ExplanationIndex;
+use App\Livewire\Discipline\ExplanationShow;
+use App\Livewire\Discipline\LetterheadPage;
 use App\Livewire\Employees\EmployeeBatch;
 use App\Livewire\Employees\EmployeeForm;
 use App\Livewire\Employees\EmployeeIndex;
@@ -26,6 +33,10 @@ use App\Livewire\Leaves\LeaveShow;
 use App\Livewire\Leaves\MyLeaves;
 use App\Livewire\Leaves\OvertimeIndex;
 use App\Livewire\Notifications\NotificationIndex;
+use App\Livewire\Permissions\PermissionForm;
+use App\Livewire\Permissions\PermissionIndex;
+use App\Livewire\Permissions\PermissionShow;
+use App\Livewire\Permissions\PermissionTypeIndex;
 use App\Livewire\Positions\PositionForm;
 use App\Livewire\Positions\PositionIndex;
 use App\Livewire\Recruitment\CandidateForm;
@@ -110,6 +121,29 @@ Route::middleware(['auth', 'ready'])->group(function () {
         Route::get('/conges/{leave}/fiche/voir', [LeaveSheetController::class, 'sheetView'])->name('leaves.sheet.view');
         Route::get('/conges/{leave}/justificatif', [LeaveSheetController::class, 'attachment'])->name('leaves.attachment');
         Route::get('/conges/{leave}/justificatif/voir', [LeaveSheetController::class, 'attachmentView'])->name('leaves.attachment.view');
+
+        // Permissions d'absence (adresses fixes AVANT /permissions/{permission})
+        Route::livewire('/permissions', PermissionIndex::class)->name('permissions.index');
+        Route::livewire('/permissions/nouvelle', PermissionForm::class)->name('permissions.create');
+        Route::livewire('/permissions/types', PermissionTypeIndex::class)->name('permissions.types');
+        Route::livewire('/permissions/{permission}', PermissionShow::class)->name('permissions.show');
+        Route::get('/permissions/{permission}/fiche', [PermissionFileController::class, 'sheet'])->name('permissions.sheet');
+        Route::get('/permissions/{permission}/fiche/voir', [PermissionFileController::class, 'sheetView'])->name('permissions.sheet.view');
+        Route::get('/permissions/{permission}/justificatif', [PermissionFileController::class, 'attachment'])->name('permissions.attachment');
+        Route::get('/permissions/{permission}/justificatif/voir', [PermissionFileController::class, 'attachmentView'])->name('permissions.attachment.view');
+
+        // Demandes d'explication (adresses fixes AVANT /explications/{case}) et papier à en-tête
+        Route::livewire('/explications', ExplanationIndex::class)->name('explanations.index');
+        Route::livewire('/explications/nouvelle', ExplanationForm::class)->name('explanations.create');
+        Route::livewire('/explications/{case}', ExplanationShow::class)->name('explanations.show');
+        Route::get('/explications/{case}/lettres/{document}', [ExplanationFileController::class, 'letter'])->name('explanations.letter');
+        Route::get('/explications/{case}/lettres/{document}/voir', [ExplanationFileController::class, 'letterView'])->name('explanations.letter.view');
+        Route::get('/explications/{case}/piece-jointe', [ExplanationFileController::class, 'attachment'])->name('explanations.attachment');
+        Route::get('/explications/{case}/piece-jointe/voir', [ExplanationFileController::class, 'attachmentView'])->name('explanations.attachment.view');
+        Route::livewire('/parametres/entete', LetterheadPage::class)->name('letterhead.edit');
+
+        // Affectations et intérims
+        Route::livewire('/affectations', AssignmentIndex::class)->name('assignments.index');
 
         // Recrutement
         Route::get('/recrutement/candidats', CandidateIndex::class)->name('candidates.index');
