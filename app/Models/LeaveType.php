@@ -21,14 +21,19 @@ class LeaveType extends Model
         ];
     }
 
-    /** Crée les types de congé par défaut d'une entreprise qui n'en a pas encore. */
+    /**
+     * Crée les types de congé par défaut qui manquent (repérés par leur code), même si d'anciens types
+     * de la première version de l'application existent déjà dans la table.
+     */
     public static function ensureDefaults(int $companyId): void
     {
-        if (static::withoutGlobalScopes()->where('company_id', $companyId)->exists()) {
-            return;
-        }
+        $existing = static::withoutGlobalScopes()->where('company_id', $companyId)->pluck('code')->filter()->all();
 
         foreach (config('leaves.default_types') as $i => $row) {
+            if (in_array($row['code'], $existing, true)) {
+                continue;
+            }
+
             $type = new static();
             $type->forceFill($row + ['company_id' => $companyId, 'active' => true, 'sort' => $i])->saveQuietly();
         }

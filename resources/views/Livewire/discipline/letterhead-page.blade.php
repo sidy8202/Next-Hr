@@ -1,7 +1,7 @@
-@include('pdf.letter-styles')
 @php($canEdit = auth()->user()->canDo('update', 'settings'))
 
 <div class="space-y-6">
+    @include('pdf.letter-styles')
     <div>
         <h2 class="text-2xl font-bold">En-tête des lettres</h2>
         <p class="text-sm text-ink-muted">Les informations de votre entreprise, le logo et le lieu apparaissent sur chaque lettre officielle générée (demande d’explication, réponse, décision).</p>

@@ -30,6 +30,7 @@ return [
                 'leave_requests' => ['cr', 'own'], 'leave_balances' => ['r', 'own'], 'absence_permissions' => ['cr', 'own'],
                 'payslips' => ['r', 'own'], 'documents' => ['r', 'own'], 'document_requests' => ['cr', 'own'],
                 'explanation_letters' => ['ru', 'own'], 'dashboard_department' => ['r', 'all'],'assignments' => ['r', 'own'],
+                'mission_orders' => ['r', 'all'],
             ],
         ],
 
@@ -48,6 +49,7 @@ return [
                 'absence_permissions' => ['cru', 'team'], 'documents' => ['r', 'team'], 'document_requests' => ['cr', 'team'],
                 'explanation_letters' => ['cr', 'team'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'],
                 'overtime' => ['cr', 'team'], 'dashboard_department' => ['r', 'all'],'assignments' => ['r', 'team'],
+                'mission_orders' => ['cru', 'all'],
             ],
         ],
 
@@ -57,13 +59,13 @@ return [
                 'employees' => ['cru', 'all'], 'departments' => ['cru', 'all'], 'positions' => ['cru', 'all'],
                 'contracts' => ['cru', 'all'], 'internships' => ['cru', 'all'], 'documents' => ['cru', 'all'],
                 'document_templates' => ['r', 'all'], 'document_requests' => ['ru', 'all'],
-                'leave_types' => ['r', 'all'], 'leave_balances' => ['cru', 'all'], 
+                'leave_types' => ['r', 'all'], 'leave_balances' => ['cru', 'all'],
                 'absence_permissions' => ['ru', 'all'], 'holidays' => ['cru', 'all'], 'explanation_letters' => ['cru', 'all'],
                 'insurances' => ['cru', 'all'], 'insurance_enrollments' => ['cru', 'all'],
                 'job_openings' => ['cru', 'all'], 'candidates' => ['cru', 'all'], 'candidate_categories' => ['cru', 'all'],
                 'job_applications' => ['cru', 'all'], 'dashboard_hr' => ['r', 'all'],
                 'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
-                'assignments' => ['crud', 'all'],
+                'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],
             ],
         ],
 
@@ -101,8 +103,8 @@ return [
             'permissions' => [
                 'employees' => ['r', 'all'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'], 'contracts' => ['r', 'all'],
                 'leave_requests' => ['ru', 'team'], 'absence_permissions' => ['ru', 'team'], 'terminations' => ['r', 'all'],
-                'job_openings' => ['r', 'all'], 'candidates' => ['r', 'all'],
-                'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],
+                'job_openings' => ['r', 'all'], 'candidates' => ['r', 'all'],'mission_orders' => ['r', 'all'],
+                'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],
             ],
         ],
     ],

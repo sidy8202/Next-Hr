@@ -1,6 +1,6 @@
-@include('pdf.letter-styles')
 
 <div class="space-y-6">
+    @include('pdf.letter-styles')
     <div>
         <h2 class="text-2xl font-bold">Nouvelle demande d’explication</h2>
         <p class="text-sm text-ink-muted">Remplissez les champs de la lettre : l’aperçu à droite est exactement ce qui sera généré en PDF et envoyé à l’employé et à la RH.</p>

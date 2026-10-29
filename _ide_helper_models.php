@@ -16,6 +16,43 @@ namespace App\Models{
  * @property int $id
  * @property int $company_id
  * @property int $employee_id
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon $end_date
+ * @property float $days
+ * @property bool $justified
+ * @property string|null $reason
+ * @property float $deducted_days
+ * @property \Illuminate\Support\Carbon|null $justified_at
+ * @property int|null $recorded_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Employee|null $employee
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereDeductedDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereJustified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereJustifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereRecordedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Absence whereUpdatedAt($value)
+ */
+	class Absence extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
  * @property string $date
  * @property string|null $start_time
  * @property string|null $end_time
@@ -54,6 +91,10 @@ namespace App\Models{
  * @property int $candidate_id
  * @property string $stage
  * @property int|null $rating
+ * @property int|null $match_score
+ * @property array<array-key, mixed>|null $match_details
+ * @property string $channel
+ * @property string|null $cover_letter_path
  * @property string|null $rejection_reason
  * @property \Illuminate\Support\Carbon|null $applied_at
  * @property \Illuminate\Support\Carbon|null $stage_changed_at
@@ -70,11 +111,15 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereAppliedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereCandidateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereChannel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereCoverLetterPath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereJobOfferId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereMatchDetails($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereMatchScore($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereRejectionReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Application whereStage($value)
@@ -108,6 +153,100 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ApplicationEvent whereUserId($value)
  */
 	class ApplicationEvent extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $approvable_type
+ * @property int $approvable_id
+ * @property int $position
+ * @property string $kind
+ * @property string $status
+ * @property int|null $decided_by
+ * @property string|null $acted_as
+ * @property string|null $comment
+ * @property \Illuminate\Support\Carbon|null $decided_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\User|null $decider
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereActedAs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereApprovableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereApprovableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereDecidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereDecidedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereKind($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApprovalStep whereUpdatedAt($value)
+ */
+	class ApprovalStep extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Poste occupé par un employé en plus (ou à la place) de son poste principal : intérim, détachement dans un autre
+ * département ou une autre base, ou cumul de deux postes.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
+ * @property string $type
+ * @property int $department_id
+ * @property int $position_id
+ * @property int|null $work_site_id
+ * @property int|null $reports_to_employee_id
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property int|null $allocation_percent
+ * @property float|null $allowance_amount
+ * @property string $allowance_basis
+ * @property bool $acts_as_head
+ * @property bool $manager_validates
+ * @property string|null $reason
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Department $department
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Models\Position $position
+ * @property-read \App\Models\Employee|null $reportsTo
+ * @property-read \App\Models\WorkSite|null $site
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment active(?\Carbon\Carbon $on = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereActsAsHead($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereAllocationPercent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereAllowanceAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereAllowanceBasis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereManagerValidates($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment wherePositionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereReportsToEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereWorkSiteId($value)
+ */
+	class Assignment extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -163,6 +302,7 @@ namespace App\Models{
  * @property string|null $notes
  * @property \Illuminate\Support\Carbon|null $consent_given_at
  * @property \Illuminate\Support\Carbon|null $retention_until
+ * @property bool $bank_consent
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -173,6 +313,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate whereBankConsent($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate whereCity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Candidate whereConsentGivenAt($value)
@@ -243,15 +384,18 @@ namespace App\Models{
  * @property string|null $trial_ends_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $career_slug
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Department> $departments
  * @property-read int|null $departments_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Employee> $employees
  * @property-read int|null $employees_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
+ * @method static \Database\Factories\CompanyFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCareerSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCountry($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Company whereCurrency($value)
@@ -462,6 +606,10 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property numeric|null $leave_days_per_month
+ * @property string|null $leave_accrual_from
+ * @property int|null $work_schedule_id
+ * @property int|null $work_site_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AbsencePermission> $absencePermissions
  * @property-read int|null $absence_permissions_count
  * @property-read \App\Models\Company $company
@@ -506,6 +654,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereIsExpatriate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereLeaveAccrualFrom($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereLeaveDaysPerMonth($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereManagerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereMaritalStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereMatricule($value)
@@ -521,10 +671,119 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereWorkEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereWorkPermitExpiresAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereWorkPermitNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereWorkScheduleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereWorkSiteId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee withoutTrashed()
  */
 	class Employee extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $reference
+ * @property int $employee_id
+ * @property int|null $issued_by_user_id
+ * @property string $signatory_name
+ * @property string|null $signatory_title
+ * @property string $subject
+ * @property string $body
+ * @property string|null $copies
+ * @property int $response_days
+ * @property \Illuminate\Support\Carbon $response_deadline
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $employee_viewed_at
+ * @property \Illuminate\Support\Carbon|null $responded_at
+ * @property string|null $response_body
+ * @property string|null $response_attachment_path
+ * @property string|null $response_attachment_name
+ * @property string|null $decision_type
+ * @property string|null $decision_subject
+ * @property string|null $decision_body
+ * @property \Illuminate\Support\Carbon|null $decided_at
+ * @property int|null $decided_by_user_id
+ * @property \Illuminate\Support\Carbon|null $suspension_start
+ * @property \Illuminate\Support\Carbon|null $suspension_end
+ * @property bool $suspension_paid
+ * @property \Illuminate\Support\Carbon|null $dismissal_effective_date
+ * @property string|null $withdrawn_reason
+ * @property \Illuminate\Support\Carbon|null $reminder_sent_at
+ * @property \Illuminate\Support\Carbon|null $overdue_notified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\User|null $decider
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ExplanationDocument> $documents
+ * @property-read int|null $documents_count
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Models\User|null $issuer
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereCopies($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDecidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDecidedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDecisionBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDecisionSubject($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDecisionType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereDismissalEffectiveDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereEmployeeViewedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereIssuedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereOverdueNotifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereReminderSentAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereRespondedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereResponseAttachmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereResponseAttachmentPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereResponseBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereResponseDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereResponseDeadline($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSignatoryName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSignatoryTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSubject($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSuspensionEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSuspensionPaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereSuspensionStart($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationCase whereWithdrawnReason($value)
+ */
+	class ExplanationCase extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $case_id
+ * @property string $kind
+ * @property string $reference
+ * @property string $file_path
+ * @property int|null $document_id
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \App\Models\Company $company
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereCaseId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereDocumentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereKind($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExplanationDocument whereReference($value)
+ */
+	class ExplanationDocument extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -567,10 +826,11 @@ namespace App\Models{
  * @property int $id
  * @property int $company_id
  * @property string $name
- * @property string $date
+ * @property \Illuminate\Support\Carbon $date
  * @property int $is_recurring
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Holiday newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Holiday newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Holiday query()
@@ -747,11 +1007,15 @@ namespace App\Models{
  * @property string $contract_type
  * @property string|null $description
  * @property string|null $requirements
+ * @property array<array-key, mixed>|null $required_skills
  * @property string|null $min_education_level
  * @property float $min_experience_years
  * @property int $vacancies
  * @property string $status
+ * @property bool $is_public
  * @property \Illuminate\Support\Carbon|null $published_at
+ * @property int|null $is_internal
+ * @property int|null $is_external
  * @property \Illuminate\Support\Carbon|null $closes_at
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -772,12 +1036,16 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereDepartmentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereIsExternal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereIsInternal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereIsPublic($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereMinEducationLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereMinExperienceYears($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer wherePositionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereProfileCategory($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer wherePublishedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereRequiredSkills($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereRequirements($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|JobOffer whereTitle($value)
@@ -859,37 +1127,99 @@ namespace App\Models{
  * @property int $leave_type_id
  * @property \Illuminate\Support\Carbon $start_date
  * @property \Illuminate\Support\Carbon $end_date
- * @property numeric $days
+ * @property float $days
  * @property string|null $reason
  * @property string $status
  * @property int|null $approved_by
- * @property string|null $decided_at
+ * @property \Illuminate\Support\Carbon|null $decided_at
  * @property string|null $decision_note
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Employee|null $approver
+ * @property bool $start_half
+ * @property bool $end_half
+ * @property string|null $exception_reason
+ * @property bool $exceeds_balance
+ * @property float|null $balance_before
+ * @property float|null $balance_after
+ * @property int|null $interim_employee_id
+ * @property string|null $attachment_path
+ * @property string|null $attachment_name
+ * @property int|null $document_id
+ * @property int|null $created_by
  * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Document|null $document
  * @property-read \App\Models\Employee|null $employee
- * @property-read \App\Models\LeaveType $leaveType
+ * @property-read \App\Models\Employee|null $interim
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ApprovalStep> $steps
+ * @property-read int|null $steps_count
+ * @property-read \App\Models\LeaveType $type
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereApprovedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereAttachmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereAttachmentPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereBalanceAfter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereBalanceBefore($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDays($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDecidedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDecisionNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDocumentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereEmployeeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereEndHalf($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereExceedsBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereExceptionReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereInterimEmployeeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereLeaveTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereStartHalf($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereUpdatedAt($value)
  */
 	class LeaveRequest extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Paramètres de congé d'UNE entreprise (lus par identifiant d'entreprise : utilisable sans utilisateur connecté).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property float $negative_tolerance
+ * @property float $default_monthly_days
+ * @property array<array-key, mixed>|null $workdays
+ * @property bool $deduct_unjustified
+ * @property int $recovery_validity_days
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $count_mode
+ * @property string $accrual_mode
+ * @property int $accrual_per_days
+ * @property array<array-key, mixed>|null $seniority_bonuses
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereAccrualMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereAccrualPerDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereCountMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereDeductUnjustified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereDefaultMonthlyDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereNegativeTolerance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereRecoveryValidityDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereSeniorityBonuses($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveSetting whereWorkdays($value)
+ */
+	class LeaveSetting extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -903,20 +1233,76 @@ namespace App\Models{
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $code
+ * @property string|null $pool
+ * @property bool $requires_document
+ * @property float|null $max_days
+ * @property bool $paid
+ * @property bool $active
+ * @property int $sort
+ * @property-read \App\Models\Company $company
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereDaysPerYear($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereIsPaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereMaxDays($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType wherePaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType wherePool($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereRequiresApproval($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereRequiresDocument($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereSort($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereUpdatedAt($value)
  */
 	class LeaveType extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Papier à en-tête d'UNE entreprise (lu par identifiant d'entreprise : utilisable sans utilisateur connecté).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property string $legal_name
+ * @property string|null $address
+ * @property string|null $city
+ * @property string|null $phone
+ * @property string|null $email
+ * @property string|null $website
+ * @property string|null $rccm
+ * @property string|null $nif
+ * @property string|null $logo_path
+ * @property string|null $footer_text
+ * @property int $default_response_days
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereDefaultResponseDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereFooterText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereLegalName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereLogoPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereNif($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereRccm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Letterhead whereWebsite($value)
+ */
+	class Letterhead extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -965,6 +1351,38 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MatriculeSetting whereUpdatedAt($value)
  */
 	class MatriculeSetting extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property mixed $status
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionApproval> $approvals
+ * @property-read int|null $approvals_count
+ * @property-read \App\Models\Company|null $company
+ * @property-read \App\Models\Department|null $department
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionParticipant> $participants
+ * @property-read int|null $participants_count
+ * @property-read \App\Models\User|null $requester
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission ongoingOn($date)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission withoutTrashed()
+ */
+	class Mission extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property-read \App\Models\Mission|null $mission
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval query()
+ */
+	class MissionApproval extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -1061,6 +1479,62 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrderEmployee whereUpdatedAt($value)
  */
 	class MissionOrderEmployee extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property mixed $role
+ * @property mixed $perdiem_mode
+ * @property-read \App\Models\Department|null $department
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Models\Mission|null $mission
+ * @property-read \App\Models\Position|null $position
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant query()
+ */
+	class MissionParticipant extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Jour de repos (ou férié) travaillé, à compenser par un jour de récupération ou un ajout au solde de congé.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
+ * @property \Illuminate\Support\Carbon $worked_on
+ * @property float $days
+ * @property string|null $reason
+ * @property string $status
+ * @property string|null $compensation
+ * @property float|null $credited_days
+ * @property \Illuminate\Support\Carbon|null $expires_on
+ * @property \Illuminate\Support\Carbon|null $decided_at
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Employee|null $employee
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereCompensation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereCreditedDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereDecidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereExpiresOn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OvertimeRecord whereWorkedOn($value)
+ */
+	class OvertimeRecord extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -1176,6 +1650,115 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission whereUserId($value)
  */
 	class Permission extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
+ * @property int $permission_type_id
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon $end_date
+ * @property string|null $start_time
+ * @property string|null $end_time
+ * @property float $days
+ * @property float|null $hours
+ * @property float $free_days
+ * @property float $deducted_days
+ * @property float $unpaid_days
+ * @property string|null $reason
+ * @property string|null $exception_reason
+ * @property bool $exceeds_balance
+ * @property float|null $balance_before
+ * @property float|null $balance_after
+ * @property string|null $attachment_path
+ * @property string|null $attachment_name
+ * @property string $status
+ * @property int|null $document_id
+ * @property \Illuminate\Support\Carbon|null $decided_at
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Document|null $document
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ApprovalStep> $steps
+ * @property-read int|null $steps_count
+ * @property-read \App\Models\PermissionType $type
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereAttachmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereAttachmentPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereBalanceAfter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereBalanceBefore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereDecidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereDeductedDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereDocumentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereEndTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereExceedsBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereExceptionReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereFreeDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest wherePermissionTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereStartTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereUnpaidDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionRequest whereUpdatedAt($value)
+ */
+	class PermissionRequest extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $code
+ * @property string $name
+ * @property string $kind
+ * @property float $free_days
+ * @property string $excess_policy
+ * @property float|null $max_days
+ * @property float|null $yearly_cap_days
+ * @property bool $requires_document
+ * @property float|null $hours_free_per_month
+ * @property string|null $sheet_message
+ * @property bool $active
+ * @property int $sort
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereExcessPolicy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereFreeDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereHoursFreePerMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereKind($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereMaxDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereRequiresDocument($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereSheetMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereSort($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermissionType whereYearlyCapDays($value)
+ */
+	class PermissionType extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -1332,6 +1915,66 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  */
 	class User extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Planning de travail : semaine standard, ou rotation (travail N jours puis repos M jours).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $type
+ * @property array<array-key, mixed>|null $workdays
+ * @property int|null $on_days
+ * @property int|null $off_days
+ * @property \Illuminate\Support\Carbon|null $anchor_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property bool $grants_annual_leave
+ * @property-read \App\Models\Company $company
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereAnchorDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereGrantsAnnualLeave($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereOffDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereOnDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSchedule whereWorkdays($value)
+ */
+	class WorkSchedule extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Base ou site de travail (Bamako, Sikasso, Ségou…).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string|null $city
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkSite whereUpdatedAt($value)
+ */
+	class WorkSite extends \Eloquent {}
 }
 
 namespace App\Models{

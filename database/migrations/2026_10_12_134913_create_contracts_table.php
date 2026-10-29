@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
-    $table->foreignId('employee_id')->constrained();
-    $table->string('type', 20);
-    $table->date('start_date');
+            $table->foreignId('employee_id')->constrained();
+             $table->string('type', 20);
+            $table->date('start_date');
     $table->date('end_date')->nullable();
     $table->unsignedBigInteger('base_salary');
     $table->string('currency', 3)->default('XOF');

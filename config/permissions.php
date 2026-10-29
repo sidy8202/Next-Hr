@@ -74,7 +74,10 @@ return [
 
 
         // Missions
-        'mission_orders' => ['label' => 'Ordres de mission', 'module' => 'Missions'],
+        'mission_orders'    => ['label' => 'Ordres de mission',                   'module' => 'Missions'],
+        'mission_orders_hr' => ['label' => 'Ordres de mission : vérification RH', 'module' => 'Missions'],
+        'mission_orders_dg' => ['label' => 'Ordres de mission : approbation DG',  'module' => 'Missions'],
+
 
         // Administration
         'users'       => ['label' => 'Utilisateurs',     'module' => 'Administration'],

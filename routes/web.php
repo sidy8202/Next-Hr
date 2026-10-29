@@ -9,12 +9,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeDocumentController;
 use App\Http\Controllers\ExplanationFileController;
 use App\Http\Controllers\LeaveSheetController;
+use App\Http\Controllers\MissionFileController;
 use App\Http\Controllers\PermissionFileController;
 use App\Livewire\Access\AccessMatrix;
+use App\Livewire\Assignments\AssignmentIndex;
 use App\Livewire\Departments\DepartmentForm;
 use App\Livewire\Departments\DepartmentIndex;
 use App\Livewire\Departments\DepartmentShow;
-use App\Livewire\Assignments\AssignmentIndex;
 use App\Livewire\Discipline\ExplanationForm;
 use App\Livewire\Discipline\ExplanationIndex;
 use App\Livewire\Discipline\ExplanationShow;
@@ -32,6 +33,9 @@ use App\Livewire\Leaves\LeaveSettingsPage;
 use App\Livewire\Leaves\LeaveShow;
 use App\Livewire\Leaves\MyLeaves;
 use App\Livewire\Leaves\OvertimeIndex;
+use App\Livewire\Missions\MissionForm;
+use App\Livewire\Missions\MissionIndex;
+use App\Livewire\Missions\MissionShow;
 use App\Livewire\Notifications\NotificationIndex;
 use App\Livewire\Permissions\PermissionForm;
 use App\Livewire\Permissions\PermissionIndex;
@@ -141,6 +145,20 @@ Route::middleware(['auth', 'ready'])->group(function () {
         Route::get('/explications/{case}/piece-jointe', [ExplanationFileController::class, 'attachment'])->name('explanations.attachment');
         Route::get('/explications/{case}/piece-jointe/voir', [ExplanationFileController::class, 'attachmentView'])->name('explanations.attachment.view');
         Route::livewire('/parametres/entete', LetterheadPage::class)->name('letterhead.edit');
+
+        //
+
+        //Ordres de Mission
+
+Route::get('/missions', MissionIndex::class)->name('missions.index');
+Route::get('/missions/nouvelle', MissionForm::class)->name('missions.create');   // AVANT {mission}
+Route::get('/missions/{mission}/modifier', MissionForm::class)->name('missions.edit');
+Route::get('/missions/{mission}', MissionShow::class)->name('missions.show');
+
+
+Route::get('/missions/{mission}/documents/{document}', [MissionFileController::class, 'download'])->name('missions.document');
+Route::get('/missions/{mission}/documents/{document}/voir', [MissionFileController::class, 'view'])->name('missions.document.view');
+
 
         // Affectations et intérims
         Route::livewire('/affectations', AssignmentIndex::class)->name('assignments.index');

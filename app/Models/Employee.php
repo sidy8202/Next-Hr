@@ -155,8 +155,12 @@ class Employee extends Model
         return $this->hasMany(AbsencePermission::class);
     }
 
-    public function missionOrderEmployees(): HasMany
+    /**
+     * Participations de l'employé aux ordres de mission
+     * (remplace l'ancienne relation missionOrderEmployees / MissionOrderEmployee).
+     */
+    public function missionParticipations(): HasMany
     {
-        return $this->hasMany(MissionOrderEmployee::class);
+        return $this->hasMany(MissionParticipant::class);
     }
 }
