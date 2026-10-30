@@ -624,8 +624,8 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LeaveRequest> $leaveRequests
  * @property-read int|null $leave_requests_count
  * @property-read Employee|null $manager
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionOrderEmployee> $missionOrderEmployees
- * @property-read int|null $mission_order_employees_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionParticipant> $missionParticipations
+ * @property-read int|null $mission_participations_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payslip> $payslips
  * @property-read int|null $payslips_count
  * @property-read \App\Models\Position $position
@@ -1355,19 +1355,58 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * @property mixed $status
+ * @property int $id
+ * @property int $company_id
+ * @property string|null $reference
+ * @property int $requested_by
+ * @property int $department_id
+ * @property string $purpose
+ * @property string $destination_zone
+ * @property string|null $lodging
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon $end_date
+ * @property string|null $program
+ * @property \App\Enums\MissionStatus $status
+ * @property \Illuminate\Support\Carbon|null $submitted_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property string|null $cancellation_reason
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionApproval> $approvals
  * @property-read int|null $approvals_count
- * @property-read \App\Models\Company|null $company
- * @property-read \App\Models\Department|null $department
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Department $department
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionDocument> $documents
+ * @property-read int|null $documents_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionParticipant> $participants
  * @property-read int|null $participants_count
- * @property-read \App\Models\User|null $requester
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionPayment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\User $requester
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission ongoingOn($date)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereCancellationReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereDestinationZone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereLodging($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereProgram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission wherePurpose($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereRequestedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereSubmittedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mission withoutTrashed()
  */
@@ -1376,11 +1415,29 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * @property int $id
+ * @property int $mission_id
+ * @property int $user_id
+ * @property string $step
+ * @property string $decision
+ * @property string|null $comment
+ * @property \Illuminate\Support\Carbon $decided_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Mission|null $mission
- * @property-read \App\Models\User|null $user
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereDecidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereMissionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereStep($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionApproval whereUserId($value)
  */
 	class MissionApproval extends \Eloquent {}
 }
@@ -1388,66 +1445,43 @@ namespace App\Models{
 namespace App\Models{
 /**
  * @property int $id
- * @property int $company_id
+ * @property int $mission_id
+ * @property int $participant_id
+ * @property string $kind
+ * @property int $version
  * @property string $reference
- * @property string $purpose
- * @property string|null $description
- * @property string|null $departure_place
- * @property string $destination
- * @property string|null $country
- * @property int $is_international
- * @property string $start_date
- * @property string $end_date
- * @property string|null $transport_mode
- * @property int $estimated_cost
- * @property string $currency
- * @property string $status
- * @property int $requested_by
- * @property int|null $approved_by
- * @property string|null $decided_at
- * @property string|null $decision_note
- * @property string|null $report
- * @property string|null $completed_at
+ * @property string $file_path
+ * @property string|null $original_name
+ * @property int $size
+ * @property string $sha256
  * @property int|null $created_by
- * @property string|null $file_path
+ * @property \Illuminate\Support\Carbon|null $superseded_at
+ * @property \Illuminate\Support\Carbon|null $voided_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Employee|null $approver
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Employee> $employees
- * @property-read int|null $employees_count
- * @property-read \App\Models\Employee|null $requester
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionOrderEmployee> $travelers
- * @property-read int|null $travelers_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereApprovedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCompletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereCurrency($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereDecidedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereDecisionNote($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereDeparturePlace($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereDestination($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereEndDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereEstimatedCost($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereFilePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereIsInternational($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder wherePurpose($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereReport($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereRequestedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereStartDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereTransportMode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrder whereUpdatedAt($value)
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\Mission|null $mission
+ * @property-read \App\Models\MissionParticipant $participant
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereKind($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereMissionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereOriginalName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereParticipantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereSha256($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereSupersededAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionDocument whereVoidedAt($value)
  */
-	class MissionOrder extends \Eloquent {}
+	class MissionDocument extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -1463,7 +1497,6 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Employee|null $employee
- * @property-read \App\Models\MissionOrder $missionOrder
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrderEmployee newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrderEmployee newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionOrderEmployee query()
@@ -1483,17 +1516,60 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * @property mixed $role
- * @property mixed $perdiem_mode
- * @property-read \App\Models\Department|null $department
+ * @property int $id
+ * @property int $mission_id
+ * @property int $employee_id
+ * @property int $department_id
+ * @property \App\Enums\MissionRole $role
+ * @property \App\Enums\PerdiemMode $perdiem_mode
+ * @property int $days
+ * @property int|null $daily_rate
+ * @property int|null $total_amount
+ * @property int|null $salary_divisor
+ * @property \Illuminate\Support\Carbon|null $rate_locked_at
+ * @property string $payment_mode
+ * @property string|null $payment_note
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Department $department
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionDocument> $documents
+ * @property-read int|null $documents_count
  * @property-read \App\Models\Employee|null $employee
  * @property-read \App\Models\Mission|null $mission
- * @property-read \App\Models\Position|null $position
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MissionPayment> $payments
+ * @property-read int|null $payments_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereDailyRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereMissionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant wherePaymentMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant wherePaymentNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant wherePerdiemMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereRateLockedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereSalaryDivisor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionParticipant whereUpdatedAt($value)
  */
 	class MissionParticipant extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property-read \App\Models\Mission|null $mission
+ * @property-read \App\Models\MissionParticipant|null $participant
+ * @property-read \App\Models\User|null $payer
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment query()
+ */
+	class MissionPayment extends \Eloquent {}
 }
 
 namespace App\Models{

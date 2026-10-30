@@ -77,6 +77,7 @@ return [
         'mission_orders'    => ['label' => 'Ordres de mission',                   'module' => 'Missions'],
         'mission_orders_hr' => ['label' => 'Ordres de mission : vérification RH', 'module' => 'Missions'],
         'mission_orders_dg' => ['label' => 'Ordres de mission : approbation DG',  'module' => 'Missions'],
+        'mission_payments' => ['label' => 'Paiements des perdiems', 'module' => 'Missions'],
 
 
         // Administration

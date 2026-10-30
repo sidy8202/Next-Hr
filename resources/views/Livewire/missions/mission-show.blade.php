@@ -169,6 +169,11 @@
             </div>
         </section>
     @endif
+    
+     {{-- Paiements des perdiems --}}
+    @if (in_array($status, ['approved', 'cancelled']))
+        <livewire:missions.mission-payments :mission-id="$mission->id" :key="'pay-'.$mission->id" />
+    @endif
 
     {{-- Annulation --}}
     @if ($canCancel)

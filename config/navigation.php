@@ -141,6 +141,14 @@ return [
                     'resource' => 'mission_orders',
                     'action' => 'read',
                 ],
+                
+                [
+                    'label' => 'Paiements perdiems',
+                    'icon' => 'scale', 'route' => 'missions.payments',
+                    'resource' => 'mission_payments',
+                    'action' => 'read'
+                ],
+
                 [
                     'label' => 'Demandes d’explications',
                     'icon' => 'document-text',

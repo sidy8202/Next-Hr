@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Department;
 
 class Mission extends Model
 {
@@ -38,6 +39,7 @@ class Mission extends Model
     public function participants(): HasMany { return $this->hasMany(MissionParticipant::class); }
     public function approvals(): HasMany { return $this->hasMany(MissionApproval::class); }
     public function documents(): HasMany { return $this->hasMany(MissionDocument::class); }
+    public function payments(): HasMany { return $this->hasMany(MissionPayment::class); }
 
     /** Missions approuvées couvrant la date donnée (pour le statut « en mission »). */
     public function scopeOngoingOn(Builder $query, $date): Builder

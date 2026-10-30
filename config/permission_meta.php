@@ -65,7 +65,7 @@ return [
                 'job_openings' => ['cru', 'all'], 'candidates' => ['cru', 'all'], 'candidate_categories' => ['cru', 'all'],
                 'job_applications' => ['cru', 'all'], 'dashboard_hr' => ['r', 'all'],
                 'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
-                'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],
+                'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],'mission_payments' => ['r', 'all'],
             ],
         ],
 
@@ -78,6 +78,15 @@ return [
                 'interviews' => ['crud', 'all' ],
                 'departments'  => ['r',    'all'],
                 'positions'    => ['r',    'all'],
+            ],
+        ],
+
+        'finance' => [
+        'label' => 'Finance / Caisse',
+        'permissions' => [
+        'mission_orders'   => ['r', 'all'],
+        'mission_payments' => ['cru', 'all'],
+        'employees'        => ['r', 'all'],
             ],
         ],
 
@@ -104,7 +113,7 @@ return [
                 'employees' => ['r', 'all'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'], 'contracts' => ['r', 'all'],
                 'leave_requests' => ['ru', 'team'], 'absence_permissions' => ['ru', 'team'], 'terminations' => ['r', 'all'],
                 'job_openings' => ['r', 'all'], 'candidates' => ['r', 'all'],'mission_orders' => ['r', 'all'],
-                'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],
+                'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],'mission_payments' => ['r', 'all'],
             ],
         ],
     ],

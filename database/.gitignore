@@ -1,1 +1,2 @@
 *.sqlite*
+/storage/app/private/ieng-mali-credentials-*.csv

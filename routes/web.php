@@ -10,6 +10,7 @@ use App\Http\Controllers\EmployeeDocumentController;
 use App\Http\Controllers\ExplanationFileController;
 use App\Http\Controllers\LeaveSheetController;
 use App\Http\Controllers\MissionFileController;
+use App\Http\Controllers\MissionPaymentFileController;
 use App\Http\Controllers\PermissionFileController;
 use App\Livewire\Access\AccessMatrix;
 use App\Livewire\Assignments\AssignmentIndex;
@@ -35,6 +36,7 @@ use App\Livewire\Leaves\MyLeaves;
 use App\Livewire\Leaves\OvertimeIndex;
 use App\Livewire\Missions\MissionForm;
 use App\Livewire\Missions\MissionIndex;
+use App\Livewire\Missions\MissionPaymentIndex;
 use App\Livewire\Missions\MissionShow;
 use App\Livewire\Notifications\NotificationIndex;
 use App\Livewire\Permissions\PermissionForm;
@@ -150,14 +152,19 @@ Route::middleware(['auth', 'ready'])->group(function () {
 
         //Ordres de Mission
 
-Route::get('/missions', MissionIndex::class)->name('missions.index');
-Route::get('/missions/nouvelle', MissionForm::class)->name('missions.create');   // AVANT {mission}
-Route::get('/missions/{mission}/modifier', MissionForm::class)->name('missions.edit');
-Route::get('/missions/{mission}', MissionShow::class)->name('missions.show');
+        Route::get('/missions', MissionIndex::class)->name('missions.index');
+        Route::get('/missions/nouvelle', MissionForm::class)->name('missions.create');   // AVANT {mission}
+        Route::livewire('/missions/paiements', MissionPaymentIndex::class)->name('missions.payments');   // AVANT /missions/{mission}
+        Route::get('/missions/{mission}/modifier', MissionForm::class)->name('missions.edit');
+        Route::get('/missions/{mission}', MissionShow::class)->name('missions.show');
 
+        Route::get('/missions/{mission}/documents/{document}', [MissionFileController::class, 'download'])->name('missions.document');
+        Route::get('/missions/{mission}/documents/{document}/voir', [MissionFileController::class, 'view'])->name('missions.document.view');
 
-Route::get('/missions/{mission}/documents/{document}', [MissionFileController::class, 'download'])->name('missions.document');
-Route::get('/missions/{mission}/documents/{document}/voir', [MissionFileController::class, 'view'])->name('missions.document.view');
+        // Après les routes missions.document* :
+        Route::get('/missions/{mission}/participants/{participant}/fiche-perdiem', [MissionPaymentFileController::class, 'sheet'])->name('missions.perdiem-sheet');
+        Route::get('/missions/{mission}/paiements/{payment}/recu', [MissionPaymentFileController::class, 'receipt'])->name('missions.payment.receipt');
+        Route::get('/missions/{mission}/paiements/{payment}/recu/voir', [MissionPaymentFileController::class, 'receiptView'])->name('missions.payment.receipt.view');
 
 
         // Affectations et intérims

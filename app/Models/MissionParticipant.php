@@ -28,6 +28,7 @@ class MissionParticipant extends Model
     public function employee(): BelongsTo { return $this->belongsTo(Employee::class); }
     public function department(): BelongsTo { return $this->belongsTo(Department::class); }
     public function documents(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(MissionDocument::class, 'participant_id'); }
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(MissionPayment::class, 'participant_id'); }
 
     public function isRateLocked(): bool
     {

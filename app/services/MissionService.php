@@ -11,6 +11,7 @@ use App\Models\MissionApproval;
 use App\Models\MissionParticipant;
 use App\Models\User;
 use App\Notifications\MissionNotification;
+use App\Services\MissionPaymentService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,9 @@ class MissionService
 
                 if ($this->isHr($user) || $this->isDg($user)) {
                     $w->orWhere('status', '!=', MissionStatus::Draft->value);
+                }
+                if ($user->canDo('read', 'mission_payments')) {
+                    $w->orWhereIn('status', [MissionStatus::Approved->value, MissionStatus::Cancelled->value]);
                 }
 
                 if ($user->employee_id) {
@@ -86,7 +90,8 @@ class MissionService
     /** Qui voit le perdiem d'un participant : RH, DG, le participant lui-même, le demandeur pour son propre département. */
     public function canSeeAmount(User $user, Mission $mission, MissionParticipant $p): bool
     {
-        if ($this->isHr($user) || $this->isDg($user)) {
+
+        if ($this->isHr($user) || $this->isDg($user) || $user->canDo('read', 'mission_payments')) {
             return true;
         }
 
@@ -366,6 +371,11 @@ class MissionService
             } catch (Throwable $e) {
                 report($e); // la RH peut relancer la génération depuis la page de la mission
             }
+             try {
+                app(MissionPaymentService::class)->createDefaultPlans($result);
+            } catch (Throwable $e) {
+                report($e); // la RH peut définir l'échéancier à la main depuis la page de la mission
+            }
         }
 
         return $result;
@@ -386,6 +396,7 @@ class MissionService
 
         $mission->update(['status' => MissionStatus::Cancelled->value, 'cancelled_at' => now(), 'cancellation_reason' => $reason]);
         $mission->documents()->update(['voided_at' => now()]);
+        $mission->payments()->where('status', 'planned')->update(['status' => 'cancelled']); //
         AuditLogger::log('cancelled', 'mission_orders', $mission->id, null, ['reason' => $reason]);
 
         if ($wasApproved) {

@@ -9,6 +9,13 @@ return [
     // Scan de l'ordre signé déposé par la RH.
     'signed' => ['mimes' => 'pdf,jpg,jpeg,png', 'max_kb' => 10240],
 
+    'payment_methods' => [
+        'cash'         => 'Espèces',
+        'mobile_money' => 'Mobile money',
+        'bank'         => 'Virement bancaire',
+        'cheque'       => 'Chèque',
+    ],
+
     'payment_modes' => [
         'before'   => 'Intégral avant le départ',
         'tranches' => 'Par tranches',
