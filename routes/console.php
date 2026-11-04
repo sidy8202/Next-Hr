@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+    })->purpose('Display an inspiring quote');
 
-use Illuminate\Support\Facades\Schedule;
+    use Illuminate\Support\Facades\Schedule;
 
 // Chaque entreprise est traitée à partir de 7 h dans SON fuseau horaire ; la commande est idempotente.
 Schedule::command('app:send-birthday-notifications')->hourly();
@@ -15,3 +15,6 @@ Schedule::command('app:send-birthday-notifications')->hourly();
 Schedule::command('recruitment:purge-expired')->dailyAt('02:00');
 Schedule::command('leaves:accrue')->dailyAt('01:00');
 Schedule::command('explanations:remind')->dailyAt('08:00');
+
+
+Schedule::command('platform:sync-subscriptions')->dailyAt('02:00');

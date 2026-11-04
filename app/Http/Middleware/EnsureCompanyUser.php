@@ -16,6 +16,12 @@ class EnsureCompanyUser
         if ($user && ! $user->company_id) {
             return redirect()->route('platform');
         }
+        if (\App\Services\PlanGate::profile($user->company_id)['state'] === 'locked'
+            && ! $request->routeIs('subscription.*', 'logout', 'notifications.*', 'password.*')) {
+            return $user->is_company_owner
+                ? redirect()->route('subscription.mine')
+                : abort(403, 'Votre abonnement est suspendu ou expiré. Contactez le propriétaire du compte.');
+        }
 
         return $next($request);
     }

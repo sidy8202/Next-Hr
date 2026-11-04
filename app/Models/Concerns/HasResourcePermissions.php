@@ -28,6 +28,9 @@ trait HasResourcePermissions
      */
     public function canDo(string $action, string $resource): bool
     {
+        if (!\App\Services\PlanGate::allowsResource($this, $resource)) {
+            return false;
+        }
         if (! in_array($action, ['create', 'read', 'update', 'delete'], true)) {
             throw new InvalidArgumentException("Action inconnue : {$action}");
         }

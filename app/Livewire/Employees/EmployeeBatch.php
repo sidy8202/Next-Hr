@@ -160,6 +160,13 @@ class EmployeeBatch extends Component
             'rows.*.email' => ['nullable', 'required_if:rows.*.create_account,true', 'email', 'max:255', 'distinct:ignore_case', Rule::unique('users', 'email')],
         ]);
 
+        // ▼▼ AJOUTE CE BLOC ICI ▼▼
+        if (! $this->employeeId && ! \App\Services\PlanGate::canAddEmployees(auth()->user()->company_id, 1)) {
+            $this->addError('employee', 'Le plafond d’effectif de votre formule est atteint. Contactez-nous pour changer de formule.');
+            return;
+        }
+        // ▲▲ FIN DU BLOC ▲▲
+
         $people = array_map(fn (array $r) => $r + [
             'department_id' => (int) $validated['batch']['department_id'],
             'children_count' => 0,

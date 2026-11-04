@@ -1562,12 +1562,56 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * @property int $id
+ * @property int $mission_id
+ * @property int $participant_id
+ * @property int $sequence
+ * @property string $label
+ * @property int $planned_amount
+ * @property \Illuminate\Support\Carbon|null $planned_date
+ * @property string $status
+ * @property int|null $paid_amount
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property string|null $method
+ * @property string|null $reference
+ * @property string|null $note
+ * @property int|null $paid_by
+ * @property \Illuminate\Support\Carbon|null $voided_at
+ * @property string|null $void_reason
+ * @property int|null $voided_by
+ * @property string|null $receipt_path
+ * @property string|null $receipt_name
+ * @property string|null $receipt_sha256
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Mission|null $mission
- * @property-read \App\Models\MissionParticipant|null $participant
+ * @property-read \App\Models\MissionParticipant $participant
  * @property-read \App\Models\User|null $payer
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereMissionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment wherePaidAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment wherePaidAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment wherePaidBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereParticipantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment wherePlannedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment wherePlannedDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereReceiptName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereReceiptPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereReceiptSha256($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereSequence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereVoidReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereVoidedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MissionPayment whereVoidedBy($value)
  */
 	class MissionPayment extends \Eloquent {}
 }
@@ -1839,6 +1883,51 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PlanFeature> $features
+ * @property-read int|null $features_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PlanPrice> $prices
+ * @property-read int|null $prices_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Subscription> $subscriptions
+ * @property-read int|null $subscriptions_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Plan query()
+ */
+	class Plan extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanFeature newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanFeature newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanFeature query()
+ */
+	class PlanFeature extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanPrice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanPrice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanPrice query()
+ */
+	class PlanPrice extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Journal en ajout seul : aucune ligne ne se modifie ni ne se supprime depuis l'application.
+ *
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformAuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformAuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlatformAuditLog query()
+ */
+	class PlatformAuditLog extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * @property int $id
  * @property int $company_id
  * @property int $department_id
@@ -1887,6 +1976,31 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereValue($value)
  */
 	class Setting extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property-read \App\Models\Company|null $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubscriptionPayment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\Plan|null $plan
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Subscription newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Subscription newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Subscription query()
+ */
+	class Subscription extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property-read \App\Models\Company|null $company
+ * @property-read \App\Models\User|null $recorder
+ * @property-read \App\Models\Subscription|null $subscription
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubscriptionPayment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubscriptionPayment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubscriptionPayment query()
+ */
+	class SubscriptionPayment extends \Eloquent {}
 }
 
 namespace App\Models{

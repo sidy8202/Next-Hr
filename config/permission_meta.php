@@ -49,7 +49,7 @@ return [
                 'absence_permissions' => ['cru', 'team'], 'documents' => ['r', 'team'], 'document_requests' => ['cr', 'team'],
                 'explanation_letters' => ['cr', 'team'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'],
                 'overtime' => ['cr', 'team'], 'dashboard_department' => ['r', 'all'],'assignments' => ['r', 'team'],
-                'mission_orders' => ['cru', 'all'],
+                'mission_orders' => ['cru', 'all'],'hr_reports' => ['r', 'all'],
             ],
         ],
 
@@ -66,6 +66,7 @@ return [
                 'job_applications' => ['cru', 'all'], 'dashboard_hr' => ['r', 'all'],
                 'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
                 'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],'mission_payments' => ['r', 'all'],
+                 'hr_reports' => ['r', 'all'],
             ],
         ],
 
@@ -78,6 +79,7 @@ return [
                 'interviews' => ['crud', 'all' ],
                 'departments'  => ['r',    'all'],
                 'positions'    => ['r',    'all'],
+
             ],
         ],
 
@@ -96,6 +98,7 @@ return [
             'permissions' => [
                 'employees' => ['r', 'all'], 'contracts' => ['r', 'all'], 'payroll_periods' => ['cru', 'all'],
                 'payslips' => ['cru', 'all'], 'documents' => ['cr', 'all'], 'dashboard_payroll' => ['r', 'all'],
+                'hr_reports' => ['r', 'all'],
             ],
         ],
 
@@ -110,10 +113,12 @@ return [
         'dg' => [
             'label' => 'Direction générale (DG / PDG)',
             'permissions' => [
-                'employees' => ['r', 'all'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'], 'contracts' => ['r', 'all'],
+                'employees' => ['r', 'all'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'],
+                 'contracts' => ['r', 'all'],
                 'leave_requests' => ['ru', 'team'], 'absence_permissions' => ['ru', 'team'], 'terminations' => ['r', 'all'],
                 'job_openings' => ['r', 'all'], 'candidates' => ['r', 'all'],'mission_orders' => ['r', 'all'],
                 'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],'mission_payments' => ['r', 'all'],
+                'hr_reports' => ['r', 'all'],
             ],
         ],
     ],

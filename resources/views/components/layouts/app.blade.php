@@ -14,6 +14,7 @@
     @livewireStyles
 </head>
 <body class="bg-surface-muted text-ink antialiased">
+    <x-ui.splash />
     <div x-data="{ collapsed: $persist(false), mobileOpen: false }" class="flex h-screen overflow-hidden">
         <x-sidebar />
 

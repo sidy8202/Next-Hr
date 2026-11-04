@@ -127,6 +127,13 @@ return [
                     'route' => 'access.matrix',
                     'resource' => 'permissions',
                 ],
+                [
+                    'label' => 'Mon abonnement',
+                    'icon' => 'document-text',
+                    'route' => 'subscription.mine',
+                    'resource' => 'settings',
+                    'action' => 'read'
+                ],
             ],
         ],
 
@@ -141,7 +148,7 @@ return [
                     'resource' => 'mission_orders',
                     'action' => 'read',
                 ],
-                
+
                 [
                     'label' => 'Paiements perdiems',
                     'icon' => 'scale', 'route' => 'missions.payments',
@@ -157,6 +164,20 @@ return [
                     'action' => 'read',
                 ],
             ],
+        ],
+
+        [
+                'label' => 'Rapports',
+                'items' =>
+                [
+                    [
+                        'label' => 'Rapports RH',
+                        'icon' => 'scale',
+                        'route' => 'reports.hr',
+                        'resource' => 'hr_reports',
+                        'action' => 'read'
+                    ],
+                ],
         ],
 
         // Congés et permissions
@@ -198,6 +219,7 @@ return [
                     'action' => 'read',
                 ],
             ],
+
         ],
 
         // Ajouter ici les futurs groupes (paie, etc.).

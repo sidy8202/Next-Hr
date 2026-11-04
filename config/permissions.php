@@ -91,6 +91,7 @@ return [
         'dashboard_hr'         => ['label' => 'Dashboard RH',          'module' => 'Tableaux de bord'],
         'dashboard_payroll'    => ['label' => 'Dashboard Paie',        'module' => 'Tableaux de bord'],
 
-
+        //Rapports
+       'hr_reports' => ['label' => 'Rapports RH', 'module' => 'Rapports'],
     ],
 ];

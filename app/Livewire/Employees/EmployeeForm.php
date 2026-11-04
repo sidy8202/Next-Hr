@@ -247,6 +247,12 @@ class EmployeeForm extends Component
             'form.send_personal' => ['boolean'],
         ]);
 
+        // ▼▼ AJOUTE CE BLOC ICI cest ici jai collé▼▼
+        if (! $this->employeeId && ! \App\Services\PlanGate::canAddEmployees(auth()->user()->company_id, 1)) {
+            $this->addError('employee', 'Le plafond d’effectif de votre formule est atteint. Contactez-nous pour changer de formule.');
+            return;
+        }
+
         $data = $validated['form'];
         $login = null;
         $sendTo = [];

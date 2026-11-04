@@ -29,6 +29,7 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->put('show_splash', true);
 
         $user = Auth::user();
 

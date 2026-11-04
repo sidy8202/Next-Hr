@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasPlatformRoles;
 use App\Models\Concerns\HasResourcePermissions;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,7 +18,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasResourcePermissions;
+    use HasFactory, Notifiable, HasResourcePermissions, HasPlatformRoles;
 
     protected function casts(): array
     {

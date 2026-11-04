@@ -20,7 +20,14 @@ class Company extends Model
         'currency',
         'logo_path',
         'status',
+        'sector',
+        'suspended_at',
+        'suspension_reason',
         'trial_ends_at',
+    ];
+    protected $casts = [
+        'suspended_at' => 'datetime',
+        'trial_ends_at' => 'datetime',
     ];
 
     /**
@@ -30,6 +37,12 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
 
     /**
      * Les employés de cette entreprise.
