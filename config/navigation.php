@@ -86,6 +86,96 @@ return [
             ],
         ],
 
+       // Paie et rémunération
+[
+    'label' => 'Paie et rémunération',
+    'items' => [
+        [
+            'label' => 'Paramètres de paie',
+            'icon' => 'cog-6-tooth',
+            'route' => 'payroll.settings',
+            'resource' => 'payroll_settings',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Grilles salariales',
+            'icon' => 'squares-2x2',
+            'route' => 'payroll.grids',
+            'resource' => 'salary_grids',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Salaires des employés',
+            'icon' => 'banknotes',
+            'route' => 'payroll.salaries',
+            'resource' => 'employee_salaries',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Rubriques de paie',
+            'icon' => 'scale',
+            'route' => 'payroll.items',
+            'resource' => 'pay_items',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Modèles de traitement',
+            'icon' => 'briefcase',
+            'route' => 'payroll.profiles',
+            'resource' => 'pay_profiles',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Affectations',
+            'icon' => 'users',
+            'route' => 'payroll.assignments',
+            'resource' => 'pay_profiles',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Primes attribuées',
+            'icon' => 'identification',
+            'route' => 'payroll.bonuses',
+            'resource' => 'employee_pay_items',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Modèles de bulletin',
+            'icon' => 'document-text',
+            'route' => 'payroll.templates',
+            'resource' => 'payroll_settings',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Variables du mois',
+            'icon' => 'clock',
+            'route' => 'payroll.variables',
+            'resource' => 'payroll_variables',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Prêts et avances',
+            'icon' => 'inbox',
+            'route' => 'payroll.loans',
+            'resource' => 'employee_loans',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Réglages des variables',
+            'icon' => 'cog',
+            'route' => 'payroll.variable-settings',
+            'resource' => 'payroll_settings',
+            'action' => 'read',
+        ],
+        [
+            'label' => 'Simulation de paie',
+            'icon' => 'banknotes',
+            'route' => 'payroll.simulation',
+            'resource' => 'payroll_simulation',
+            'action' => 'read',
+        ],
+    ],
+],
         // Recrutement
         [
             'label' => 'Recrutement',

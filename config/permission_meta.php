@@ -66,7 +66,9 @@ return [
                 'job_applications' => ['cru', 'all'], 'dashboard_hr' => ['r', 'all'],
                 'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
                 'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],'mission_payments' => ['r', 'all'],
-                 'hr_reports' => ['r', 'all'],
+                'hr_reports' => ['r', 'all'], 'payroll_settings' => ['r', 'all'],'salary_grids' => ['r', 'all'],
+                'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'],
+                'pay_profiles' => ['r', 'all'], 'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],
             ],
         ],
 
@@ -98,7 +100,11 @@ return [
             'permissions' => [
                 'employees' => ['r', 'all'], 'contracts' => ['r', 'all'], 'payroll_periods' => ['cru', 'all'],
                 'payslips' => ['cru', 'all'], 'documents' => ['cr', 'all'], 'dashboard_payroll' => ['r', 'all'],
-                'hr_reports' => ['r', 'all'],
+                'hr_reports' => ['r', 'all'], 'payroll_settings' => ['ru', 'all'], 'salary_grids' => ['rud', 'all'],
+                'employee_salaries' => ['ru', 'all'], 'pay_items' => ['rud', 'all'],
+                'pay_profiles' => ['rud', 'all'], 'employee_pay_items' => ['rud', 'all'],
+                'payroll_variables' => ['rud', 'all'], 'employee_loans' => ['rud', 'all'],
+                'payroll_simulation' => ['r', 'all'],
             ],
         ],
 
@@ -118,8 +124,10 @@ return [
                 'leave_requests' => ['ru', 'team'], 'absence_permissions' => ['ru', 'team'], 'terminations' => ['r', 'all'],
                 'job_openings' => ['r', 'all'], 'candidates' => ['r', 'all'],'mission_orders' => ['r', 'all'],
                 'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],'mission_payments' => ['r', 'all'],
-                'hr_reports' => ['r', 'all'],
-            ],
+                'hr_reports' => ['r', 'all'],'payroll_settings' => ['r', 'all'], 'salary_grids' => ['r', 'all'],
+                'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'], 'pay_profiles' => ['r', 'all'],
+                'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],
+                ],
         ],
-    ],
+  ],
 ];

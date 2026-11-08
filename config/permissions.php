@@ -91,6 +91,15 @@ return [
         'dashboard_hr'         => ['label' => 'Dashboard RH',          'module' => 'Tableaux de bord'],
         'dashboard_payroll'    => ['label' => 'Dashboard Paie',        'module' => 'Tableaux de bord'],
 
+        'payroll_settings'  => ['label' => 'Paramètres de paie', 'module'=>'Paie et rémunération'    ],
+        'salary_grids'      => ['label' => 'Grilles salariales', 'module'=>'Paie et rémunération'     ],
+        'employee_salaries' => ['label' => 'Salaires des employés', 'module'=>'Paie et rémunération'],
+        'pay_items'         => ['label' => 'Rubriques de paie', 'module'=>'Paie et rémunération'],
+        'pay_profiles'      => ['label' => 'Modèles de traitement', 'module'=>'Paie et rémunération'],
+        'employee_pay_items' => ['label' => 'Primes attribuées', 'module'=>'Paie et rémunération'],
+        'payroll_variables'  => ['label' => 'Variables du mois', 'module'=>'Paie et rémunération'],
+        'employee_loans'     => ['label' => 'Prêts et avances', 'module'=>'Paie et rémunération'],
+        'payroll_simulation' => ['label' => 'Simulation de paie', 'module'=>'Paie et rémunération'],
         //Rapports
        'hr_reports' => ['label' => 'Rapports RH', 'module' => 'Rapports'],
     ],

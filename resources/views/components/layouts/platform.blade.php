@@ -9,6 +9,7 @@
         ['Équipe', 'platform.staff', 'staff.manage', 'M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8M21 20v-2a4 4 0 00-3-3.9M16 2.1a4 4 0 010 7.8', 'platform.staff'],
         ['Journal d’audit', 'platform.audit', 'audit.view', 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z', 'platform.audit'],
         ['Rapports et analyses', 'platform.reports', 'reports.view', 'M3 3v18h18M7 15l4-4 3 3 5-6', 'platform.reports'],
+        ['Règles de paie', 'platform.payroll-rules', 'plans.manage', 'M12 3v18m-6-6 6 6 6-6M4 7h16', 'platform.payroll-rules'],
     ];
 @endphp
 <!DOCTYPE html>

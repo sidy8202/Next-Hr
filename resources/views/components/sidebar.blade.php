@@ -31,7 +31,7 @@
                                    'bg-brand-600 text-white shadow-sm' => $active,
                                    'text-brand-200 hover:bg-white/10 hover:text-white' => ! $active,
                                ])>
-                                <x-dynamic-component :component="'heroicon-o-' . $item['icon']" class="size-5 shrink-0" />
+                                <x-dynamic-component :component="'heroicon-o-' . $item['icon']" class="size-5 shrink-0" />      
                                 <span class="truncate" :class="collapsed && 'lg:hidden'">{{ $item['label'] }}</span>
                             </a>
                         </li>
