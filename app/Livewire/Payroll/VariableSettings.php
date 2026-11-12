@@ -17,6 +17,10 @@ class VariableSettings extends Component
     public array $rest = [0];
     public bool $unjustified_absence_unpaid = true;
     public string $loan_effort_alert_percent = '';
+    public string $arrival_rule = 'threshold';
+    public string $arrival_grace_days = '5';
+    public string $departure_rule = 'prorate';
+    public string $departure_grace_days = '5';
 
     public string $newLabel = '';
     public string $newPercent = '';
@@ -33,6 +37,10 @@ class VariableSettings extends Component
         $this->rest = array_map('strval', $s->restDays());
         $this->unjustified_absence_unpaid = $s->unjustified_absence_unpaid;
         $this->loan_effort_alert_percent = $s->loan_effort_alert_percent !== null ? rtrim(rtrim(number_format((float) $s->loan_effort_alert_percent, 1, '.', ''), '0'), '.') : '';
+        $this->arrival_rule = (string) ($s->arrival_rule ?? 'threshold');
+        $this->arrival_grace_days = (string) ($s->arrival_grace_days ?? 5);
+        $this->departure_rule = (string) ($s->departure_rule ?? 'prorate');
+        $this->departure_grace_days = (string) ($s->departure_grace_days ?? 5);
     }
 
     public function save(): void
@@ -47,10 +55,14 @@ class VariableSettings extends Component
             'rest' => 'array',
             'rest.*' => 'integer|between:0,6',
             'loan_effort_alert_percent' => 'nullable|numeric|between:1,100',
-        ], [], ['loan_effort_alert_percent' => "seuil d'alerte"]);
+            'arrival_rule' => 'required|in:prorate,full,threshold',
+            'arrival_grace_days' => 'required|integer|between:0,30',
+            'departure_rule' => 'required|in:prorate,full,threshold',
+            'departure_grace_days' => 'required|integer|between:0,30',
+        ], [], ['loan_effort_alert_percent' => "seuil d'alerte", 'arrival_grace_days' => 'jour limite d\'arrivée', 'departure_grace_days' => 'nombre de jours de fin de mois']);
 
         $s = PayrollVariableSetting::forCompany($this->companyId());
-        $old = $s->only(['pay_basis', 'suspension_count_mode', 'rest_weekdays', 'unjustified_absence_unpaid', 'loan_effort_alert_percent']);
+        $old = $s->only(['pay_basis', 'suspension_count_mode', 'rest_weekdays', 'unjustified_absence_unpaid', 'loan_effort_alert_percent', 'arrival_rule', 'arrival_grace_days', 'departure_rule', 'departure_grace_days']);
 
         $s->update([
             'pay_basis' => $this->pay_basis,
@@ -59,6 +71,13 @@ class VariableSettings extends Component
             'unjustified_absence_unpaid' => $this->unjustified_absence_unpaid,
             'loan_effort_alert_percent' => $this->loan_effort_alert_percent !== '' ? (float) $this->loan_effort_alert_percent : null,
         ]);
+
+        $s->forceFill([
+            'arrival_rule' => $this->arrival_rule,
+            'arrival_grace_days' => (int) $this->arrival_grace_days,
+            'departure_rule' => $this->departure_rule,
+            'departure_grace_days' => (int) $this->departure_grace_days,
+        ])->save();
 
         $this->audit('update', 'payroll_settings', $s->id, $old, $s->only(array_keys($old)) + ['scope' => 'variables']);
         $this->flash = 'Réglages enregistrés.';

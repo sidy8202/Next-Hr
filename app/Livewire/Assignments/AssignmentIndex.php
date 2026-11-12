@@ -44,6 +44,9 @@ class AssignmentIndex extends Component
     public $allocation_percent = '';
     public $allowance_amount = '';
     public string $allowance_basis = 'monthly';
+    public string $pay_mode = 'allowance';
+    public $pay_salary_step_id = '';
+    public string $pay_salary_basis = 'difference';
     public bool $acts_as_head = false;
     public bool $manager_validates = true;
     public string $reason = '';
@@ -74,7 +77,23 @@ class AssignmentIndex extends Component
     public function updatedDepartmentId(): void
     {
         $this->position_id = '';
-        unset($this->positions);
+        $this->pay_salary_step_id = '';
+        unset($this->positions, $this->steps);
+    }
+
+    public function updatedPositionId(): void
+    {
+        $this->pay_salary_step_id = '';
+        unset($this->steps);
+    }
+
+    /** Échelons du poste choisi (sa catégorie, définie dans les grilles salariales). */
+    #[Computed]
+    public function steps()
+    {
+        $grade = $this->position_id ? Position::whereKey((int) $this->position_id)->value('salary_grade_id') : null;
+
+        return $grade ? \App\Models\SalaryStep::where('salary_grade_id', $grade)->orderBy('sort')->get() : collect();
     }
 
     #[Computed]
@@ -133,15 +152,20 @@ class AssignmentIndex extends Component
             'allocation_percent' => ['nullable', 'integer', 'between:1,100'],
             'allowance_amount' => ['nullable', 'numeric', 'min:0'],
             'allowance_basis' => ['required', 'in:monthly,total'],
+            'pay_mode' => ['required', 'in:allowance,position_salary'],
+            'pay_salary_basis' => ['required', 'in:difference,full'],
             'reason' => ['nullable', 'string', 'max:255'],
         ], [], ['employee_id' => 'employé', 'department_id' => 'département', 'position_id' => 'poste', 'start_date' => 'date de début', 'end_date' => 'date de fin']);
 
         app(AssignmentService::class)->create(Employee::findOrFail($this->employee_id), $this->only([
             'type', 'department_id', 'position_id', 'work_site_id', 'reports_to_employee_id', 'start_date', 'end_date',
-            'allocation_percent', 'allowance_amount', 'allowance_basis', 'acts_as_head', 'manager_validates', 'reason',
+           'allocation_percent', 'allowance_amount', 'allowance_basis', 'pay_mode', 'pay_salary_step_id', 'pay_salary_basis',
+            'acts_as_head', 'manager_validates', 'reason',
         ]));
 
-        $this->reset(['employee_id', 'department_id', 'position_id', 'work_site_id', 'reports_to_employee_id', 'start_date', 'end_date', 'allocation_percent', 'allowance_amount', 'reason', 'acts_as_head']);
+        $this->reset(['employee_id', 'department_id', 'position_id', 'work_site_id', 'reports_to_employee_id', 'start_date', 'end_date', 'allocation_percent', 'allowance_amount', 'reason', 'acts_as_head','pay_salary_step_id']);
+        $this->pay_mode = 'allowance';
+        $this->pay_salary_basis = 'difference';
         $this->manager_validates = true;
         $this->showForm = false;
         unset($this->assignments, $this->positions);

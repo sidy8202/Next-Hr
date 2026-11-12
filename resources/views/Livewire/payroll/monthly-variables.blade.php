@@ -18,6 +18,12 @@
         <div class="rounded-lg border border-line bg-surface-muted px-4 py-3 text-sm text-ink">{{ $flash }}</div>
     @endif
 
+    @if ($closed)
+        <div class="rounded-lg border border-line bg-surface-muted px-4 py-3 text-sm text-ink">
+            Cette paie est clôturée : ses variables ne se modifient plus. Pour corriger une erreur, utilisez « Régulariser » dans « Paie du mois ».
+        </div>
+    @endif
+
     @foreach ($syncNotes as $n)
         <div class="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">{{ $n }}</div>
     @endforeach

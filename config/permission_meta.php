@@ -126,7 +126,7 @@ return [
                 'dashboard_hr' => ['r', 'all'], 'dashboard_payroll' => ['r', 'all'],'mission_orders_dg' => ['u', 'all'],'mission_payments' => ['r', 'all'],
                 'hr_reports' => ['r', 'all'],'payroll_settings' => ['r', 'all'], 'salary_grids' => ['r', 'all'],
                 'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'], 'pay_profiles' => ['r', 'all'],
-                'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],
+                'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],'payroll_periods' => ['r', 'all'],
                 ],
         ],
   ],

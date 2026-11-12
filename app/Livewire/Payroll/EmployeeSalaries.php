@@ -6,8 +6,11 @@ use App\Livewire\Payroll\Concerns\PayrollGuards;
 use App\Models\Contract;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
+use App\Models\Payslip;
 use App\Models\SalaryGrade;
 use App\Models\SalaryStep;
+use App\Services\Payroll\NetImportParser;
+use App\Services\Payroll\PayrollNets;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -31,6 +34,8 @@ class EmployeeSalaries extends Component
     public string $notes = '';
 
     public ?int $historyId = null;
+    public string $netsText = '';
+    public array $netsReport = [];
     public string $flash = '';
 
     public function mount(): void
@@ -149,7 +154,7 @@ class EmployeeSalaries extends Component
                 'mode' => $this->mode,
                 'base_amount' => $base,
                 'supplement_amount' => $supplement,
-                'target_net' => $this->mode === 'net_target' ? $targetNet : null,
+                'target_net' => $targetNet > 0 ? $targetNet : null,
                 'effective_from' => $from->toDateString(),
                 'effective_until' => null,
                 'notes' => trim($this->notes) ?: null,
@@ -163,7 +168,7 @@ class EmployeeSalaries extends Component
 
         $this->audit('create', 'employee_salaries', $salary->id, null, [
             'employee_id' => $employee->id, 'mode' => $this->mode, 'base' => $base, 'supplement' => $supplement,
-            'target_net' => $this->mode === 'net_target' ? $targetNet : null, 'effective_from' => $from->toDateString(),
+            'target_net' => $targetNet > 0 ? $targetNet : null, 'effective_from' => $from->toDateString(),
         ]);
 
         $this->showForm = false;
@@ -215,6 +220,102 @@ class EmployeeSalaries extends Component
             . ($skipped > 0 ? ' ; ' . $skipped . ' employé(s) sans contrat exploitable (salaire de base absent ou nul) restent à saisir à la main.' : '.');
     }
 
+    // ───── Net connu ─────
+
+    /** Remplit le net connu avec le net que le moteur calcule pour ce salaire (mois complet, sans variables). */
+    public function useCalculatedNet(): void
+    {
+        $this->allow('update', 'employee_salaries');
+
+        $base = $this->digits($this->base_amount);
+
+        if (! $this->employeeId || $base <= 0 || $this->effective_from === '') {
+            $this->addError('target_net', 'Renseignez d\'abord la date d\'effet et le salaire de base.');
+
+            return;
+        }
+
+        try {
+            $net = PayrollNets::calculatedContractNet((int) $this->employeeId, Carbon::parse($this->effective_from)->format('Y-m'), [
+                'base' => $base, 'supplement' => $this->digits($this->supplement_amount), 'mode' => 'gross', 'target_net' => null,
+            ]);
+        } catch (\RuntimeException $e) {
+            $this->addError('target_net', $e->getMessage());
+
+            return;
+        }
+
+        $this->target_net = (string) $net;
+        $this->resetErrorBag('target_net');
+    }
+
+    /** Colle une liste « matricule ; net » : renseigne uniquement les nets connus encore vides. */
+    public function importNets(): void
+    {
+        $this->allow('update', 'employee_salaries');
+
+        $parsed = NetImportParser::parse($this->netsText);
+        $report = PayrollNets::applyKnownNets($parsed['pairs']);
+
+        foreach ($parsed['invalid'] as $line) {
+            $report[] = ['matricule' => $line, 'status' => 'invalid', 'detail' => 'Ligne illisible : attendu « matricule ; net ».'];
+        }
+
+        $this->netsReport = $report;
+        $set = count(array_filter($report, fn ($r) => $r['status'] === 'set'));
+        $this->audit('update', 'employee_salaries', null, null, ['import_known_nets' => $set]);
+        $this->flash = $set . ' net(s) connu(s) enregistré(s).';
+
+        if ($set === count($parsed['pairs']) && $parsed['invalid'] === []) {
+            $this->netsText = '';
+        }
+    }
+
+    /** Au démarrage : complète les nets connus manquants avec le net calculé par le moteur. */
+    public function fillMissingNets(): void
+    {
+        $this->allow('update', 'employee_salaries');
+
+        $result = PayrollNets::fillMissingFromCalculation(now()->format('Y-m'));
+        $this->audit('update', 'employee_salaries', null, null, ['fill_missing_nets' => $result['filled']]);
+        $this->flash = $result['filled'] . ' net(s) connu(s) complété(s) d\'après le calcul' . ($result['failed'] > 0 ? ' ; ' . $result['failed'] . ' employé(s) non calculables (règles ou données manquantes)' : '') . '. À comparer ensuite à vos bulletins existants.';
+    }
+
+    /**
+     * Net garanti : le sursalaire n'est pas saisi, le moteur le recalcule à chaque paie. On l'affiche donc d'après la dernière paie
+     * calculée, au lieu du montant enregistré (qui reste à 0). « Figer » le transforme en nouvelle ligne « brut fixé ».
+     */
+    public function freezeSupplement(int $employeeId): void
+    {
+        $this->allow('update', 'employee_salaries');
+
+        try {
+            $calculated = PayrollNets::calculatedSupplement($employeeId, now()->format('Y-m'));
+        } catch (\RuntimeException $e) {
+            $this->flash = $e->getMessage();
+
+            return;
+        }
+
+        $this->openForm($employeeId);
+        $this->mode = 'gross';
+        $this->supplement_amount = (string) $calculated;
+        $this->flash = 'Sursalaire calculé : ' . number_format($calculated, 0, ',', ' ') . '. Vérifiez la date d\'effet puis enregistrez : une nouvelle ligne « brut fixé » est créée, l\'ancienne reste dans l\'historique.';
+    }
+
+    /** @return array<int, int> sursalaire calculé par employé en net garanti, d'après leur dernière paie calculée */
+    protected function calculatedSupplements($rows): array
+    {
+        $ids = $rows->filter(fn ($r) => $r['salary'] && $r['salary']->mode === 'net_target')->map(fn ($r) => $r['employee']->id)->values()->all();
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return Payslip::whereIn('employee_id', $ids)->orderByDesc('period')->get(['employee_id', 'period', 'snapshot'])->unique('employee_id')
+            ->mapWithKeys(fn ($p) => [$p->employee_id => (int) ($p->snapshot['result']['supplement']['used'] ?? 0)])->all();
+    }
+
     // ───── Historique ─────
 
     public function showHistory(int $employeeId): void
@@ -252,6 +353,8 @@ class EmployeeSalaries extends Component
             'history' => $history,
             'historyName' => $historyEmployee ? $this->employeeName($historyEmployee) : '',
             'grades' => SalaryGrade::whereHas('grid', fn ($q) => $q->where('is_active', true))->with(['grid', 'steps'])->orderBy('sort')->orderBy('id')->get(),
+            'calculated' => $this->calculatedSupplements($rows),
+            'withoutNet' => $rows->filter(fn ($r) => $r['salary'] && $r['salary']->target_net === null)->count(),
             'canEdit' => $this->allowed('update', 'employee_salaries'),
         ])->layout($this->resolveLayout('company'), ['title' => 'Salaires des employés']);
     }

@@ -10,12 +10,13 @@ use App\Models\PayItem;
 use App\Models\PayrollVariable;
 use App\Services\Payroll\LoanSchedule;
 use App\Services\Payroll\PayrollDays;
+use App\Services\Payroll\PayrollPeriodGuard;
 use App\Services\Payroll\PayVariables;
 use App\Services\Payroll\PayVariableSync;
 use Livewire\Component;
 
 class MonthlyVariables extends Component
-{   
+{
     use PayrollGuards;
 
     public string $period = '';
@@ -40,6 +41,20 @@ class MonthlyVariables extends Component
     {
         $this->allow('read', 'payroll_variables');
         $this->period = now()->format('Y-m');
+
+        // Les propositions du mois courant se rafraîchissent d'elles-mêmes à l'ouverture : plus besoin de cliquer.
+        if ($this->allowed('update', 'payroll_variables') && ! PayrollPeriodGuard::isClosed($this->period)) {
+            try {
+                $result = PayVariableSync::run($this->period, $this->companyId());
+                $this->syncNotes = $result['notes'];
+
+                if ($result['created'] + $result['updated'] + $result['removed'] > 0) {
+                    $this->flash = $result['created'] . ' proposition(s) ajoutée(s) automatiquement, ' . $result['updated'] . ' mise(s) à jour, ' . $result['removed'] . ' retirée(s).';
+                }
+            } catch (\Throwable $e) {
+                $this->syncNotes = ['Les propositions automatiques n\'ont pas pu être mises à jour : ' . $e->getMessage()];
+            }
+        }
     }
 
     public function updatedPeriod(): void
@@ -131,7 +146,7 @@ class MonthlyVariables extends Component
         }
 
         $old = $v->quantity;
-        $v->update(['quantity' => round((float) $text, 2)]);
+        $v->update(['quantity' => round((float) $text, 2), 'is_edited' => true]);
         $this->audit('update', 'payroll_variables', $v->id, ['quantity' => $old], ['quantity' => $v->quantity]);
     }
 
@@ -146,7 +161,7 @@ class MonthlyVariables extends Component
         }
 
         $old = $v->amount_override;
-        $v->update(['amount_override' => $amount]);
+        $v->update(['amount_override' => $amount, 'is_edited' => true]);
         $this->audit('update', 'payroll_variables', $v->id, ['amount_override' => $old], ['amount_override' => $amount]);
     }
 
@@ -168,7 +183,7 @@ class MonthlyVariables extends Component
         }
 
         $old = $v->rate_percent;
-        $v->update(['rate_percent' => $rate]);
+        $v->update(['rate_percent' => $rate, 'is_edited' => true]);
         $this->audit('update', 'payroll_variables', $v->id, ['rate_percent' => $old], ['rate_percent' => $rate]);
     }
 
@@ -286,6 +301,7 @@ class MonthlyVariables extends Component
 
     public function render()
     {
+        $closed = PayrollPeriodGuard::isClosed($this->period);
         $term = mb_strtolower(trim($this->search));
 
         $employees = Employee::orderBy('matricule')->get();
@@ -327,10 +343,11 @@ class MonthlyVariables extends Component
             'rates' => OvertimeRate::where('is_active', true)->orderBy('sort')->orderBy('percent')->get(),
             'bonusItems' => PayItem::where('is_system', false)->where('is_active', true)->whereIn('type', ['gain', 'benefit_in_kind'])->orderBy('code')->get(),
             'deductionItems' => PayItem::where('is_system', false)->where('is_active', true)->whereIn('type', ['gross_deduction', 'deduction_internal', 'deduction_individual'])->orderBy('code')->get(),
-            'kinds' => PayrollVariable::KINDS,
+            'kinds' => array_diff_key(PayrollVariable::KINDS, ['assignment' => 1]),
             'monthLabel' => $this->monthLabel(),
-            'canEdit' => $this->allowed('update', 'payroll_variables'),
-            'canDelete' => $this->allowed('delete', 'payroll_variables'),
+            'closed' => $closed,
+            'canEdit' => $this->allowed('update', 'payroll_variables') && ! $closed,
+            'canDelete' => $this->allowed('delete', 'payroll_variables') && ! $closed,
         ])->layout($this->resolveLayout('company'), ['title' => 'Variables du mois']);
     }
 

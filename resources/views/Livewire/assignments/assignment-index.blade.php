@@ -60,14 +60,40 @@
                     <label class="mb-1 block text-sm font-medium">Part du temps / du coût (%) <span class="text-xs font-normal text-ink-muted">— informatif : répartit plus tard le coût entre les postes ; le total reste ≤ 100 %</span></label>
                     <input type="number" min="1" max="100" wire:model="allocation_percent" class="input" placeholder="ex. 40">
                 </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium">Prime liée à l’affectation</label>
-                    <input type="number" min="0" step="0.01" wire:model="allowance_amount" class="input" placeholder="ex. 50000">
+                 <div>
+                    <label class="mb-1 block text-sm font-medium">Rémunération de l’affectation</label>
+                    <select wire:model.live="pay_mode" class="input">
+                        <option value="allowance">Prime fixée</option>
+                        <option value="position_salary">Salaire du poste occupé, proratisé</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium">Mode de la prime</label>
-                    <select wire:model="allowance_basis" class="input"><option value="monthly">Mensuelle, proratisée au jour</option><option value="total">Montant total réparti sur la durée</option></select>
-                </div>
+                @if ($pay_mode === 'allowance')
+                    <div>
+                        <label class="mb-1 block text-sm font-medium">Prime liée à l’affectation</label>
+                        <input type="number" min="0" step="0.01" wire:model="allowance_amount" class="input" placeholder="ex. 50000">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-sm font-medium">Mode de la prime</label>
+                        <select wire:model="allowance_basis" class="input"><option value="monthly">Mensuelle, proratisée au jour</option><option value="total">Montant total réparti sur la durée</option></select>
+                    </div>
+                @else
+                    <div>
+                        <label class="mb-1 block text-sm font-medium">Échelon du poste</label>
+                        <select wire:model="pay_salary_step_id" class="input" @disabled(! $position_id)>
+                            <option value="">Choisir…</option>
+                            @foreach ($this->steps as $s)<option value="{{ $s->id }}">{{ $s->label }} — {{ number_format($s->amount, 0, ',', ' ') }}</option>@endforeach
+                        </select>
+                        @if ($position_id && $this->steps->isEmpty())<p class="mt-1 text-xs text-amber-600">Ce poste n’a pas de catégorie : rattachez-le dans « Grilles salariales ».</p>@endif
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-sm font-medium">Ce qui est payé</label>
+                        <select wire:model="pay_salary_basis" class="input">
+                            <option value="difference">L’écart avec son salaire actuel</option>
+                            <option value="full">Le salaire entier du poste</option>
+                        </select>
+                    </div>
+                @endif <!-- CORRECTION : Fermeture correcte du bloc if/else -->
+
                 <div class="sm:col-span-3"><label class="mb-1 block text-sm font-medium">Motif</label><input type="text" wire:model="reason" class="input" placeholder="ex. Remplacement du chef de département pendant son congé"></div>
                 <label class="flex items-start gap-2 text-sm sm:col-span-3"><input type="checkbox" wire:model="acts_as_head" class="mt-1"> <span>Fait fonction de chef de ce département : il valide à sa place les demandes de congé, de permission et de jours travaillés de l’équipe.</span></label>
                 <label class="flex items-start gap-2 text-sm sm:col-span-3"><input type="checkbox" wire:model="manager_validates" class="mt-1"> <span>Le supérieur de cette affectation peut aussi valider les demandes de l’employé (en plus de son chef habituel).</span></label>

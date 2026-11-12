@@ -40,6 +40,9 @@ class AssignmentService
                 'allocation_percent' => ! empty($d['allocation_percent']) ? (int) $d['allocation_percent'] : null,
                 'allowance_amount' => isset($d['allowance_amount']) && $d['allowance_amount'] !== '' ? round((float) $d['allowance_amount'], 2) : null,
                 'allowance_basis' => $d['allowance_basis'] ?? 'monthly',
+                'pay_mode' => ($d['pay_mode'] ?? 'allowance') === 'position_salary' ? 'position_salary' : 'allowance',
+                'pay_salary_step_id' => ($d['pay_mode'] ?? '') === 'position_salary' && ! empty($d['pay_salary_step_id']) ? (int) $d['pay_salary_step_id'] : null,
+                'pay_salary_basis' => ($d['pay_salary_basis'] ?? 'difference') === 'full' ? 'full' : 'difference',
                 'acts_as_head' => ! empty($d['acts_as_head']),
                 'manager_validates' => ! array_key_exists('manager_validates', $d) || ! empty($d['manager_validates']),
                 'reason' => trim((string) ($d['reason'] ?? '')) ?: null,
@@ -172,8 +175,18 @@ class AssignmentService
                 $fail('Supérieur inconnu.');
             }
         }
-        if (($d['allowance_basis'] ?? 'monthly') === 'total' && ! empty($d['allowance_amount']) && ! $end) {
+       if (($d['allowance_basis'] ?? 'monthly') === 'total' && ! empty($d['allowance_amount']) && ! $end) {
             $fail('Une prime « répartie sur la durée » exige une date de fin.');
+        }
+        if (($d['pay_mode'] ?? 'allowance') === 'position_salary') {
+            $grade = Position::whereKey((int) ($d['position_id'] ?? 0))->value('salary_grade_id');
+
+            if (empty($d['pay_salary_step_id'])) {
+                $fail('Choisissez l’échelon du poste dont le salaire sert de base à la prime.');
+            }
+            if (! $grade || ! \App\Models\SalaryStep::whereKey((int) $d['pay_salary_step_id'])->where('salary_grade_id', $grade)->exists()) {
+                $fail('Cet échelon n’appartient pas à la catégorie de ce poste (rattachez d’abord le poste à une catégorie dans les grilles salariales).');
+            }
         }
         if (! empty($d['allocation_percent']) && ((int) $d['allocation_percent'] < 1 || (int) $d['allocation_percent'] > 100)) {
             $fail('La répartition doit être comprise entre 1 et 100 %.');
@@ -198,6 +211,7 @@ class AssignmentService
             $fail('Cet employé a déjà cette affectation (même poste, même base) sur cette période.');
         }
     }
+
 
     private function period(Assignment $a): string
     {

@@ -244,9 +244,12 @@ Route::redirect('/', '/dashboard');
             Route::livewire('/paie/modeles-bulletin', \App\Livewire\Payroll\PayslipTemplates::class)->name('payroll.templates');
             Route::livewire('/paie/variables', MonthlyVariables::class)->name('payroll.variables');
             Route::livewire('/paie/prets', EmployeeLoans::class)->name('payroll.loans');
-            Route::livewire('/paie/reglages-variables', VariableSettings::class)->name('payroll.variable-settings');
-            Route::livewire('/paie/simulation', PayrollSimulation::class)->name('payroll.simulation');
-
+            Route::livewire('/paie/reglages-variables', \App\Livewire\Payroll\VariableSettings::class)->name('payroll.variable-settings');
+            Route::livewire('/paie/simulation', \App\Livewire\Payroll\PayrollSimulation::class)->name('payroll.simulation');
+            Route::livewire('/paie/mois', \App\Livewire\Payroll\PayrollMonth::class)->name('payroll.month');
+            Route::get('/bulletins/{payslip}/pdf', [\App\Http\Controllers\PayslipDownloadController::class, 'show'])->name('payslips.pdf');
+            Route::livewire('/mes-bulletins', \App\Livewire\Payroll\MyPayslips::class)->name('payslips.mine');
             Route::livewire('/rapports-rh', HrReports::class)->name('reports.hr');
         });
 });
+Route::get('/suivi/bulletin/{token}', [\App\Http\Controllers\PayslipTrackingController::class, 'pixel'])->name('payslips.track');

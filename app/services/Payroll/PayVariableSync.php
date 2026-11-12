@@ -3,11 +3,16 @@
 namespace App\Services\Payroll;
 
 use App\Models\Absence;
+use App\Models\Assignment;
+use App\Models\Employee;
 use App\Models\ExplanationCase;
 use App\Models\LeaveType;
 use App\Models\PayItem;
+use App\Models\PayrollSetting;
 use App\Models\PayrollVariable;
 use App\Models\PayrollVariableSetting;
+use App\Models\SalaryStep;
+use App\Services\AssignmentService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +28,7 @@ class PayVariableSync
     public const SYSTEM_ITEMS = [
         'overtime' => ['100010', 'Heures supplémentaires', 'gain', true, true, 30],
         'worked_days' => ['100020', 'Jours travaillés payés', 'gain', true, true, 35],
+        'assignment_allowance' => ['100030', "Prime d'affectation", 'gain', true, true, 36],
         'absence_deduction' => ['300001', 'Absence non rémunérée', 'gross_deduction', true, true, 300],
         'suspension' => ['300002', 'Mise à pied', 'gross_deduction', true, true, 310],
         'loan' => ['390001', 'Remboursement de prêt', 'deduction_individual', false, false, 900],
@@ -128,6 +134,16 @@ class PayVariableSync
             $proposals[] = $p;
         }
 
+        // 5. Primes d'affectation (intérim, détachement, cumul).
+        foreach (self::assignmentProposals($period, $start, $end, $companyId, $notes) as $p) {
+            $proposals[] = $p;
+        }
+
+        // 6. Jours de permission non payés (permissions approuvées dont une partie dépasse les jours accordés).
+        foreach (self::permissionProposals($start, $end, $companyId, $notes) as $p) {
+            $proposals[] = $p;
+        }
+
         return self::persist($period, $companyId, $proposals, $notes);
     }
 
@@ -214,6 +230,129 @@ class PayVariableSync
         }
     }
 
+    /**
+     * Primes d'affectation du mois. Deux façons de payer, choisies sur l'affectation :
+     *  - « allowance » : la prime fixée de l'écran Affectations, calculée par AssignmentService::allowanceLines() (même règle) ;
+     *  - « position_salary » : salaire de l'échelon du poste occupé (écart avec le salaire de l'employé, ou salaire entier), proratisé au jour.
+     * Le montant est stocké sur la ligne proposée : le RH le voit et peut le corriger avant de confirmer.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function assignmentProposals(string $period, string $start, string $end, int $companyId, array &$notes): array
+    {
+        $out = [];
+
+        try {
+            $rounding = (string) PayrollSetting::forCompany($companyId)->rounding;
+            $monthStart = Carbon::parse($start);
+            $daysInMonth = (int) $monthStart->daysInMonth;
+            $service = app(AssignmentService::class);
+
+            $assignments = Assignment::with(['position', 'department'])->whereDate('start_date', '<=', $end)
+                ->where(fn ($q) => $q->whereNull('end_date')->orWhereDate('end_date', '>=', $start))->get();
+
+            foreach ($assignments as $a) {
+                $from = $a->start_date->toDateString();
+                $to = $a->end_date ? $a->end_date->toDateString() : '9999-12-31';
+                $days = PayrollDays::countDays($from, $to, 'calendar', [], [], $start, $end);
+
+                if ($days <= 0) {
+                    continue;
+                }
+
+                $mode = $a->pay_mode ?: 'allowance';
+
+                if ($mode === 'position_salary') {
+                    $step = $a->pay_salary_step_id ? SalaryStep::find($a->pay_salary_step_id) : null;
+
+                    if (! $step) {
+                        $notes[] = "Une affectation « salaire du poste » n'a pas d'échelon choisi (employé n° {$a->employee_id}) : aucune prime proposée.";
+
+                        continue;
+                    }
+
+                    $reference = PayVariables::context($companyId, [(int) $a->employee_id], $period)['pay'][(int) $a->employee_id] ?? null;
+
+                    if ($reference === null && ($a->pay_salary_basis ?: 'difference') === 'difference') {
+                        $notes[] = "Affectation de l'employé n° {$a->employee_id} : salaire introuvable ce mois-ci, impossible de calculer l'écart avec le poste.";
+
+                        continue;
+                    }
+
+                    $amount = AssignmentPay::positionSalaryAmount((float) $step->amount, (float) ($reference ?? 0), $days, $daysInMonth, $a->pay_salary_basis ?: 'difference', $rounding);
+                    $how = 'salaire du poste' . (($a->pay_salary_basis ?: 'difference') === 'full' ? ' (entier)' : ' (écart)');
+                } else {
+                    if ($a->allowance_amount === null) {
+                        continue;
+                    }
+
+                    $employee = Employee::find($a->employee_id);
+                    $line = $employee ? collect($service->allowanceLines($employee, $monthStart))->first(fn ($l) => $l['assignment']->id === $a->id) : null;
+
+                    if (! $line) {
+                        continue;
+                    }
+
+                    $amount = AssignmentPay::allowanceAmount((float) $line['amount'], $rounding);
+                    $how = 'prime fixée';
+                }
+
+                if ($amount <= 0) {
+                    continue;
+                }
+
+                $out[] = [
+                    'employee_id' => (int) $a->employee_id, 'kind' => 'assignment', 'quantity' => (float) $days, 'unit' => 'days', 'days_mode' => null,
+                    'amount_override' => $amount, 'source_type' => 'assignment', 'source_id' => (int) $a->id,
+                    'source_ref' => $a->typeLabel() . ' : ' . ($a->position?->title ?? 'poste') . ($a->department ? ' (' . $a->department->name . ')' : '')
+                        . ', ' . $a->start_date->format('d/m/Y') . ' → ' . ($a->end_date ? $a->end_date->format('d/m/Y') : 'sans limite') . ' · ' . $how,
+                ];
+            }
+        } catch (\Throwable $e) {
+            $notes[] = 'Les affectations n\'ont pas pu être lues : ' . $e->getMessage();
+        }
+
+        return $out;
+    }
+
+    /**
+     * Jours de permission non payés : la table permission_requests porte déjà « unpaid_days » (jours non payés pour la paie).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected static function permissionProposals(string $start, string $end, int $companyId, array &$notes): array
+    {
+        try {
+            if (! Schema::hasTable('permission_requests')) {
+                return [];
+            }
+
+            $out = [];
+            $rows = DB::table('permission_requests')->where('company_id', $companyId)->where('status', 'approved')->where('unpaid_days', '>', 0)
+                ->whereDate('start_date', '<=', $end)->whereDate('end_date', '>=', $start)->get();
+
+            foreach ($rows as $r) {
+                $from = substr((string) $r->start_date, 0, 10);
+                $to = substr((string) $r->end_date, 0, 10);
+                $qty = PayrollDays::proportionalDays((float) $r->unpaid_days, $from, $to, $start, $end);
+
+                if ($qty > 0) {
+                    $out[] = [
+                        'employee_id' => (int) $r->employee_id, 'kind' => 'unpaid_absence', 'quantity' => $qty, 'unit' => 'days', 'days_mode' => null,
+                        'source_type' => 'permission_request', 'source_id' => (int) $r->id,
+                        'source_ref' => 'Permission du ' . Carbon::parse($from)->format('d/m/Y') . ' au ' . Carbon::parse($to)->format('d/m/Y') . ' (jours non payés)',
+                    ];
+                }
+            }
+
+            return $out;
+        } catch (\Throwable $e) {
+            $notes[] = 'Les permissions n\'ont pas pu être lues : ' . $e->getMessage();
+
+            return [];
+        }
+    }
+
     /** @return array<int, string> jours fériés du mois (table « holidays » si elle existe avec une colonne « date ») */
     protected static function holidays(string $start, string $end, int $companyId): array
     {
@@ -257,10 +396,23 @@ class PayVariableSync
                 $row->company_id = $companyId;
                 $row->save();
                 $created++;
-            } elseif ($existing->status === 'proposed' && ((float) $existing->quantity !== (float) $p['quantity'] || $existing->source_ref !== $p['source_ref'])) {
-                $existing->update(['quantity' => $p['quantity'], 'source_ref' => $p['source_ref'], 'days_mode' => $p['days_mode']]);
+            } elseif ($existing->status === 'proposed' && ! $existing->is_edited && (
+                (float) $existing->quantity !== (float) $p['quantity']
+                || $existing->source_ref !== $p['source_ref']
+                || (array_key_exists('amount_override', $p) && (int) $existing->amount_override !== (int) $p['amount_override'])
+            )) {
+                $update = ['quantity' => $p['quantity'], 'source_ref' => $p['source_ref'], 'days_mode' => $p['days_mode']];
+
+                if (array_key_exists('amount_override', $p)) {
+                    $update['amount_override'] = $p['amount_override'];
+                }
+
+                $existing->update($update);
                 $updated++;
-            } elseif ($existing->status === 'confirmed' && (float) $existing->quantity !== (float) $p['quantity']) {
+            } elseif ($existing->status === 'confirmed' && (
+                (float) $existing->quantity !== (float) $p['quantity']
+                || (array_key_exists('amount_override', $p) && (int) $existing->amount_override !== (int) $p['amount_override'])
+            )) {
                 $notes[] = 'La source de « ' . $existing->source_ref . ' » a changé depuis la confirmation : vérifiez la quantité confirmée.';
             }
         }

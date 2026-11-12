@@ -24,7 +24,8 @@ class Assignment extends Model
 
     protected $fillable = [
         'employee_id', 'type', 'department_id', 'position_id', 'work_site_id', 'reports_to_employee_id', 'start_date', 'end_date',
-        'allocation_percent', 'allowance_amount', 'allowance_basis', 'acts_as_head', 'manager_validates', 'reason', 'created_by',
+       'allocation_percent', 'allowance_amount', 'allowance_basis', 'pay_mode', 'pay_salary_step_id', 'pay_salary_basis',
+       'acts_as_head', 'manager_validates', 'reason', 'created_by',
     ];
 
     protected function casts(): array

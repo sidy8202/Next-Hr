@@ -23,6 +23,7 @@ class PayVariables
         'worked_days' => 'worked_days',
         'unpaid_absence' => 'absence_deduction',
         'suspension' => 'suspension',
+        'assignment' => 'assignment_allowance',
     ];
 
     /** @return array{pay: array<int, float>, daysBasis: int, hoursMonth: float, rounding: string} */
@@ -84,7 +85,7 @@ class PayVariables
     {
         return match ($v->kind) {
             'unpaid_absence', 'suspension' => 'gross_deduct',
-            'overtime_hours', 'worked_days' => 'gross_add',
+            'overtime_hours', 'worked_days', 'assignment' => 'gross_add',
             default => $v->item ? self::effectOfType($v->item->type) : 'gross_add',
         };
     }
