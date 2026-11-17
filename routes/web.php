@@ -27,6 +27,7 @@ use App\Livewire\Discipline\ExplanationShow;
 use App\Livewire\Discipline\LetterheadPage;
 use App\Livewire\Employees\EmployeeBatch;
 use App\Livewire\Employees\EmployeeForm;
+use App\Livewire\Employees\EmployeeImport;
 use App\Livewire\Employees\EmployeeIndex;
 use App\Livewire\Employees\EmployeeShow;
 use App\Livewire\Leaves\AbsenceIndex;
@@ -119,12 +120,17 @@ Route::redirect('/', '/dashboard');
             Route::livewire('/facturation', BillingSettings::class)->middleware($can('plans.manage'))->name('platform.billing');
             Route::get('/factures/{payment}', [PlatformInvoiceController::class, 'show'])->middleware($can('subscriptions.view'))->name('platform.invoice');
             Route::livewire('/regles-paie', \App\Livewire\Platform\PayrollRules::class)->middleware($can('plans.manage'))->name('platform.payroll-rules');
+            Route::livewire('/plateforme/paquets-paie', \App\Livewire\Platform\PayrollPackages::class)->name('platform.payroll-packages');
         });
 
         // Utilisateurs rattachés à une entreprise cliente
         Route::middleware('company')->group(function () {
             Route::livewire('/dashboard', \App\Livewire\Dashboard\CompanyDashboard::class)->name('dashboard');
             Route::post('/welcome/dismiss', [DashboardController::class, 'dismissWelcome'])->name('welcome.dismiss');
+
+            //discussion chat
+            Route::livewire('/chat', \App\Livewire\Chat\ChatPage::class)->name('chat.index');
+            Route::get('/chat/messages/{message}/attachment', [\App\Http\Controllers\ChatAttachmentController::class, 'download'])->name('chat.attachments.download');
 
             // ATTENTION à l'ordre : les adresses fixes (/nouveau…) AVANT les adresses à paramètre ({id}).
             //Gestion des abonnement cotés compagnie
@@ -145,6 +151,8 @@ Route::redirect('/', '/dashboard');
             // Employés
             Route::livewire('/employes', EmployeeIndex::class)->name('employees.index');
             Route::livewire('/employes/nouveau', EmployeeForm::class)->name('employees.create');
+
+            Route::livewire('/employes/import', EmployeeImport::class)->name('employees.import');
             Route::livewire('/employes/nouvelles-recrues', EmployeeBatch::class)->name('employees.batch');
             Route::livewire('/employes/{employee}', EmployeeShow::class)->name('employees.show');
             Route::livewire('/employes/{employee}/modifier', EmployeeForm::class)->name('employees.edit');
@@ -234,9 +242,11 @@ Route::redirect('/', '/dashboard');
             Route::get('/recrutement/candidatures/{application}/lettre/voir', [ApplicationDocumentController::class, 'view'])->name('applications.cover.view');
 
             Route::livewire('/paie/parametres', Settings::class)->name('payroll.settings');
+            Route::livewire('/paie/demarrage-rapide', \App\Livewire\Payroll\Packages::class)->name('payroll.packages');
             Route::livewire('/paie/grilles', SalaryGrids::class)->name('payroll.grids');
             Route::livewire('/paie/salaires', EmployeeSalaries::class)->name('payroll.salaries');
             Route::livewire('/paie/salaires', \App\Livewire\Payroll\EmployeeSalaries::class)->name('payroll.salaries');
+            Route::get('/paie/salaires', \App\Http\Controllers\PayrollHubRedirectController::class)->name('payroll.salaries');
             Route::livewire('/paie/rubriques', PayItems::class)->name('payroll.items');
             Route::livewire('/paie/modeles', PayProfiles::class)->name('payroll.profiles');
             Route::livewire('/paie/affectations', PayAssignments::class)->name('payroll.assignments');
@@ -246,7 +256,11 @@ Route::redirect('/', '/dashboard');
             Route::livewire('/paie/prets', EmployeeLoans::class)->name('payroll.loans');
             Route::livewire('/paie/reglages-variables', \App\Livewire\Payroll\VariableSettings::class)->name('payroll.variable-settings');
             Route::livewire('/paie/simulation', \App\Livewire\Payroll\PayrollSimulation::class)->name('payroll.simulation');
+            Route::livewire('/paie/tableau-de-bord', \App\Livewire\Payroll\PayrollDashboard::class)->name('payroll.dashboard');
+            Route::livewire('/paie/demarrer', \App\Livewire\Payroll\SetupWizard::class)->name('payroll.start');
             Route::livewire('/paie/mois', \App\Livewire\Payroll\PayrollMonth::class)->name('payroll.month');
+            Route::livewire('/paie/employes', \App\Livewire\Payroll\PeopleHub::class)->name('payroll.people');
+            Route::livewire('/paie/configuration', \App\Livewire\Payroll\ConfigHub::class)->name('payroll.config');
             Route::get('/bulletins/{payslip}/pdf', [\App\Http\Controllers\PayslipDownloadController::class, 'show'])->name('payslips.pdf');
             Route::livewire('/mes-bulletins', \App\Livewire\Payroll\MyPayslips::class)->name('payslips.mine');
             Route::livewire('/rapports-rh', HrReports::class)->name('reports.hr');

@@ -22,6 +22,7 @@
 
     {{-- Notifications (branchées à l'étape 2.4) --}}
     <livewire:notification-bell />
+    <livewire:chat.message-bell />
 
     {{-- Thème clair / sombre --}}
     <button type="button" x-data

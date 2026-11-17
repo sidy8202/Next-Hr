@@ -210,6 +210,9 @@ namespace App\Models{
  * @property int|null $allocation_percent
  * @property float|null $allowance_amount
  * @property string $allowance_basis
+ * @property string $pay_mode
+ * @property int|null $pay_salary_step_id
+ * @property string $pay_salary_basis
  * @property bool $acts_as_head
  * @property bool $manager_validates
  * @property string|null $reason
@@ -238,6 +241,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereEndDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereManagerValidates($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment wherePayMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment wherePaySalaryBasis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment wherePaySalaryStepId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment wherePositionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Assignment whereReportsToEmployeeId($value)
@@ -366,6 +372,91 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CandidateCategory whereUpdatedAt($value)
  */
 	class CandidateCategory extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int|null $created_by
+ * @property string $type
+ * @property string|null $title
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\ChatMessage|null $latestMessage
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatMessage> $messages
+ * @property-read int|null $messages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatParticipant> $participants
+ * @property-read int|null $participants_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatConversation whereUpdatedAt($value)
+ */
+	class ChatConversation extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $conversation_id
+ * @property int $sender_id
+ * @property string|null $body
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $attachment_path
+ * @property string|null $attachment_name
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\ChatConversation $conversation
+ * @property-read \App\Models\User $sender
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereAttachmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereAttachmentPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereConversationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereSenderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatMessage whereUpdatedAt($value)
+ */
+	class ChatMessage extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $conversation_id
+ * @property int $user_id
+ * @property \Illuminate\Support\Carbon|null $last_read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\ChatConversation $conversation
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereConversationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereLastReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ChatParticipant whereUserId($value)
+ */
+	class ChatParticipant extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -2014,25 +2105,114 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Paquet par secteur (espace plateforme). Un paquet validé ne se modifie plus : on crée une nouvelle version.
+ *
  * @property int $id
- * @property int $company_id
- * @property int $year
- * @property int $month
+ * @property string $code
+ * @property string $name
+ * @property string|null $sector
+ * @property int $version
  * @property string $status
- * @property string|null $closed_at
+ * @property string|null $description
+ * @property string|null $source
+ * @property array<array-key, mixed> $payload
+ * @property int|null $created_by
+ * @property int|null $validated_by
+ * @property \Illuminate\Support\Carbon|null $validated_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PayrollPackageApplication> $applications
+ * @property-read int|null $applications_count
+ * @property-read \App\Models\User|null $validator
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereSector($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereValidatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereValidatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackage whereVersion($value)
+ */
+	class PayrollPackage extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Une application de paquet par une entreprise. Pas de scope global : on filtre toujours par company_id.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $payroll_package_id
+ * @property string $package_code
+ * @property string $package_name
+ * @property int $package_version
+ * @property bool $was_validated
+ * @property int|null $applied_by
+ * @property array<array-key, mixed> $report
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\PayrollPackage $package
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereAppliedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication wherePackageCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication wherePackageName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication wherePackageVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication wherePayrollPackageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereReport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPackageApplication whereWasValidated($value)
+ */
+	class PayrollPackageApplication extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $period
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $calculated_at
+ * @property int|null $calculated_by
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property int|null $closed_by
+ * @property array<array-key, mixed>|null $summary
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $closer
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payslip> $payslips
+ * @property-read int|null $payslips_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereCalculatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereCalculatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereClosedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod wherePeriod($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereSummary($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollPeriod whereYear($value)
  */
 	class PayrollPeriod extends \Eloquent {}
 }
@@ -2120,6 +2300,37 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * État de l'assistant « Démarrer la paie » (une ligne par entreprise).
+ *
+ * Comme PayrollSetting, ce modèle n'utilise pas le scope global : on filtre toujours explicitement par company_id.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property bool $is_hidden
+ * @property array<array-key, mixed>|null $confirmed
+ * @property array<array-key, mixed>|null $skipped
+ * @property \Illuminate\Support\Carbon|null $welcomed_at
+ * @property \Illuminate\Support\Carbon|null $simulation_done_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereConfirmed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereIsHidden($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereSimulationDoneAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereSkipped($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollSetupState whereWelcomedAt($value)
+ */
+	class PayrollSetupState extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * @property int $id
  * @property int $company_id
  * @property int $employee_id
@@ -2135,6 +2346,7 @@ namespace App\Models{
  * @property int|null $source_id
  * @property string|null $source_ref
  * @property string $status
+ * @property bool $is_edited
  * @property string|null $note
  * @property int|null $created_by
  * @property int|null $confirmed_by
@@ -2156,6 +2368,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereDaysMode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereEmployeeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereIsEdited($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereKind($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable whereNote($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariable wherePayItemId($value)
@@ -2181,18 +2394,30 @@ namespace App\Models{
  * @property array<array-key, mixed>|null $rest_weekdays
  * @property bool $unjustified_absence_unpaid
  * @property numeric|null $loan_effort_alert_percent
+ * @property int $net_tolerance
+ * @property string $arrival_rule
+ * @property int $arrival_grace_days
+ * @property string $departure_rule
+ * @property int $departure_grace_days
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $ui_mode
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereArrivalGraceDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereArrivalRule($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereDepartureGraceDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereDepartureRule($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereLoanEffortAlertPercent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereNetTolerance($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting wherePayBasis($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereRestWeekdays($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereSuspensionCountMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereUiMode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereUnjustifiedAbsenceUnpaid($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollVariableSetting whereUpdatedAt($value)
  */
@@ -2203,33 +2428,110 @@ namespace App\Models{
 /**
  * @property int $id
  * @property int $company_id
- * @property int $employee_id
  * @property int $payroll_period_id
+ * @property int $employee_id
+ * @property \App\Models\PayrollPeriod $period
+ * @property string $status
+ * @property string $employee_name
+ * @property string|null $matricule
+ * @property int|null $department_id
+ * @property string|null $department_name
  * @property int $gross
- * @property int $deductions
- * @property int $net
- * @property string $currency
- * @property string|null $published_at
- * @property string|null $file_path
+ * @property int $net_to_pay
+ * @property int $net_contract
+ * @property int|null $net_known
+ * @property int $variables_effect
+ * @property int|null $structure_gap
+ * @property string $check_status
+ * @property int $employee_contributions
+ * @property int $its
+ * @property int $employer_total
+ * @property int $employer_cost
+ * @property int|null $acknowledged_by
+ * @property \Illuminate\Support\Carbon|null $acknowledged_at
+ * @property string|null $acknowledged_note
+ * @property string $input_hash
+ * @property array<array-key, mixed> $snapshot
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Employee|null $employee
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereAcknowledgedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereAcknowledgedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereAcknowledgedNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereCheckStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereCompanyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereCurrency($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereDeductions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereDepartmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereEmployeeContributions($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereEmployeeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereEmployeeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereEmployerCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereEmployerTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereGross($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereNet($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereInputHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereIts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereMatricule($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereNetContract($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereNetKnown($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereNetToPay($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip wherePayrollPeriodId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip wherePublishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip wherePeriod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereSnapshot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereStructureGap($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payslip whereVariablesEffect($value)
  */
 	class Payslip extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $payslip_id
+ * @property int $employee_id
+ * @property string $channel
+ * @property string|null $address
+ * @property string $status
+ * @property int $attempts
+ * @property \Illuminate\Support\Carbon|null $sent_at
+ * @property string|null $error
+ * @property string $token
+ * @property \Illuminate\Support\Carbon|null $opened_at
+ * @property \Illuminate\Support\Carbon|null $viewed_at
+ * @property int|null $triggered_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\Payslip $payslip
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereAttempts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereChannel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereOpenedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery wherePayslipId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereSentAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereTriggeredBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayslipDelivery whereViewedAt($value)
+ */
+	class PayslipDelivery extends \Eloquent {}
 }
 
 namespace App\Models{

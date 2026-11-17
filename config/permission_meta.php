@@ -20,6 +20,7 @@ return [
         'leave_balances', 'leave_requests', 'absence_permissions', 'payslips',
         'terminations', 'explanation_letters', 'insurance_enrollments',
         'leave_requests', 'overtime','assignments', // (portées own / team / all)
+        'team_chat' => ['cr', 'all'],
     ],
 
     'templates' => [
@@ -30,7 +31,7 @@ return [
                 'leave_requests' => ['cr', 'own'], 'leave_balances' => ['r', 'own'], 'absence_permissions' => ['cr', 'own'],
                 'payslips' => ['r', 'own'], 'documents' => ['r', 'own'], 'document_requests' => ['cr', 'own'],
                 'explanation_letters' => ['ru', 'own'], 'dashboard_department' => ['r', 'all'],'assignments' => ['r', 'own'],
-                'mission_orders' => ['r', 'all'],
+                'mission_orders' => ['r', 'all'],'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -39,6 +40,7 @@ return [
             'permissions' => [
                 'leave_requests' => ['cr', 'own'],
                 'overtime'       => ['cr', 'own'],
+                'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -49,7 +51,7 @@ return [
                 'absence_permissions' => ['cru', 'team'], 'documents' => ['r', 'team'], 'document_requests' => ['cr', 'team'],
                 'explanation_letters' => ['cr', 'team'], 'departments' => ['r', 'all'], 'positions' => ['r', 'all'],
                 'overtime' => ['cr', 'team'], 'dashboard_department' => ['r', 'all'],'assignments' => ['r', 'team'],
-                'mission_orders' => ['cru', 'all'],'hr_reports' => ['r', 'all'],
+                'mission_orders' => ['cru', 'all'],'hr_reports' => ['r', 'all'],'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -67,7 +69,7 @@ return [
                 'leave_requests' => ['crud', 'all'], 'leave_settings' => ['ru', 'all'], 'absences' => ['crud', 'all'], 'overtime' => ['cru', 'all'],
                 'assignments' => ['crud', 'all'],'mission_orders' => ['cru', 'all'], 'mission_orders_hr' => ['u', 'all'],'mission_payments' => ['r', 'all'],
                 'hr_reports' => ['r', 'all'], 'payroll_settings' => ['r', 'all'],'salary_grids' => ['r', 'all'],
-                'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'],
+                'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'],'team_chat' => ['cr', 'all'],
                 'pay_profiles' => ['r', 'all'], 'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],
             ],
         ],
@@ -81,6 +83,7 @@ return [
                 'interviews' => ['crud', 'all' ],
                 'departments'  => ['r',    'all'],
                 'positions'    => ['r',    'all'],
+                'team_chat' => ['cr', 'all'],
 
             ],
         ],
@@ -91,6 +94,7 @@ return [
         'mission_orders'   => ['r', 'all'],
         'mission_payments' => ['cru', 'all'],
         'employees'        => ['r', 'all'],
+        'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -101,10 +105,10 @@ return [
                 'employees' => ['r', 'all'], 'contracts' => ['r', 'all'], 'payroll_periods' => ['cru', 'all'],
                 'payslips' => ['cru', 'all'], 'documents' => ['cr', 'all'], 'dashboard_payroll' => ['r', 'all'],
                 'hr_reports' => ['r', 'all'], 'payroll_settings' => ['ru', 'all'], 'salary_grids' => ['rud', 'all'],
-                'employee_salaries' => ['ru', 'all'], 'pay_items' => ['rud', 'all'],
+                'employee_salaries' => ['ru', 'all'], 'pay_items' => ['rud', 'all'],'dashboard_hr' => ['r', 'all'],
                 'pay_profiles' => ['rud', 'all'], 'employee_pay_items' => ['rud', 'all'],
                 'payroll_variables' => ['rud', 'all'], 'employee_loans' => ['rud', 'all'],
-                'payroll_simulation' => ['r', 'all'],
+                'payroll_simulation' => ['r', 'all'],'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -112,7 +116,7 @@ return [
             'label' => 'Responsable administratif',
             'permissions' => [
                 'employees' => ['r', 'all'], 'insurances' => ['cru', 'all'], 'insurance_enrollments' => ['cru', 'all'],
-                'documents' => ['cru', 'all'], 'document_requests' => ['ru', 'all'],
+                'documents' => ['cru', 'all'], 'document_requests' => ['ru', 'all'],'team_chat' => ['cr', 'all'],
             ],
         ],
 
@@ -127,6 +131,7 @@ return [
                 'hr_reports' => ['r', 'all'],'payroll_settings' => ['r', 'all'], 'salary_grids' => ['r', 'all'],
                 'employee_salaries' => ['r', 'all'], 'pay_items' => ['r', 'all'], 'pay_profiles' => ['r', 'all'],
                 'employee_pay_items' => ['r', 'all'],'payroll_simulation' => ['r', 'all'],'payroll_periods' => ['r', 'all'],
+                'team_chat' => ['cr', 'all'],
                 ],
         ],
   ],

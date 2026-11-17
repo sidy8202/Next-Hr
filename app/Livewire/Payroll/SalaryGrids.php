@@ -239,6 +239,7 @@ class SalaryGrids extends Component
             'amount' => $amount,
             'sort' => $count + 1,
         ]);
+         \App\Services\Payroll\PositionSalaryRange::syncGrade($grade->id);
 
         $this->audit('update', 'salary_grids', $grade->salary_grid_id, null, ['grade' => $grade->code, 'step_amount' => $amount]);
         unset($this->newSteps[$gradeId]);
@@ -264,15 +265,16 @@ class SalaryGrids extends Component
         $old = ['label' => $step->label, 'amount' => $step->amount];
         $step->update(['label' => $label !== '' ? mb_substr($label, 0, 60) : $step->label, 'amount' => $amount]);
         $this->stepAmounts[$id] = (string) $amount;
+        \App\Services\Payroll\PositionSalaryRange::syncGrade((int) $step->salary_grade_id);
         $this->audit('update', 'salary_grids', $step->grade->salary_grid_id, $old, ['label' => $step->label, 'amount' => $amount]);
     }
 
     public function deleteStep(int $id): void
     {
-        $this->allow('delete', 'salary_grids');
-        $step = SalaryStep::whereHas('grade.grid')->findOrFail($id);
         $this->audit('delete', 'salary_grids', $step->grade->salary_grid_id, ['step' => $step->label, 'amount' => $step->amount], null);
+        $gradeId = (int) $step->salary_grade_id;
         $step->delete();
+        \App\Services\Payroll\PositionSalaryRange::syncGrade($gradeId);
         $this->loadGrid();
     }
 
@@ -288,8 +290,8 @@ class SalaryGrids extends Component
             SalaryGrade::whereHas('grid')->findOrFail($gradeId);
         }
 
-        $old = $position->salary_grade_id;
-        $position->forceFill(['salary_grade_id' => $gradeId])->save();
+        $old = $position->forceFill(['salary_grade_id' => $gradeId])->save();
+        \App\Services\Payroll\PositionSalaryRange::syncPosition($position);
         $this->audit('update', 'salary_grids', $position->id, ['position_grade' => $old], ['position_grade' => $gradeId]);
     }
 

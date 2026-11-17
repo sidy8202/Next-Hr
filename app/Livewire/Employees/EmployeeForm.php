@@ -6,9 +6,14 @@ use App\Livewire\Concerns\AuthorizesResource;
 use App\Models\Department;
 use App\Models\Document;
 use App\Models\Employee;
+use App\Models\EmployeeSalary;
+use App\Models\PayProfile;
 use App\Models\Position;
+use App\Models\SalaryStep;
 use App\Services\AuditLogger;
 use App\Services\EmployeeService;
+use App\Services\Payroll\EmployeeSalaryDraft;
+use App\Services\Payroll\HypotheticalPay;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -20,7 +25,10 @@ use Livewire\WithFileUploads;
 
 /**
  * Page « Nouvel employé » (création) et « Modifier l'employé » (édition).
- * Flux : vue → save() → validation → EmployeeService (transaction) → emails → redirection.
+ * Flux : vue → save() → validation → EmployeeService (transaction : employé, contrat, ligne de salaire datée, modèle de traitement) → emails → redirection.
+ *
+ * Salaire à la création : si le poste a une catégorie salariale, on choisit un échelon (montant libre réservé à ceux qui peuvent modifier les salaires) ;
+ * sinon montant libre. Net visé et modèle de traitement : facultatifs, réservés aux droits concernés. L'aperçu de paie est un confort : il ne bloque jamais l'enregistrement.
  */
 #[Layout('components.layouts.app')]
 class EmployeeForm extends Component
@@ -88,6 +96,7 @@ class EmployeeForm extends Component
             'emergency_contact_name' => '', 'emergency_contact_phone' => '',
             'department_id' => null, 'position_id' => null, 'manager_id' => null, 'hire_date' => now()->toDateString(),
             'contract_type' => 'CDI', 'duration_months' => '', 'base_salary' => '','leave_days_per_month' => '',
+            'salary_step_id' => '', 'net_target' => '', 'net_mode' => 'reference', 'pay_profile_id' => '',
             'create_account' => false, 'login_email_source' => 'work', 'send_work' => true, 'send_personal' => true,
         ];
     }
@@ -113,6 +122,13 @@ class EmployeeForm extends Component
     public function updatedFormDepartmentId(): void
     {
         $this->form['position_id'] = null;
+        $this->form['salary_step_id'] = '';
+    }
+
+    /** Un autre poste = une autre catégorie : l'échelon choisi n'a plus de sens. */
+    public function updatedFormPositionId(): void
+    {
+        $this->form['salary_step_id'] = '';
     }
 
     public function updatedFormMaritalStatus(): void
@@ -138,6 +154,119 @@ class EmployeeForm extends Component
         return $id ? Position::where('department_id', $id)->orderBy('title')->get(['id', 'title']) : collect();
     }
 
+    /** Le poste choisi (avec sa catégorie salariale éventuelle). */
+    #[Computed]
+    public function position(): ?Position
+    {
+        $id = $this->form['position_id'] ?? null;
+
+        return $id ? Position::where('department_id', $this->form['department_id'] ?? 0)->find((int) $id) : null;
+    }
+
+    /** Échelons de la catégorie du poste choisi. */
+    #[Computed]
+    public function steps()
+    {
+        $gradeId = $this->position?->salary_grade_id;
+
+        return $gradeId
+            ? SalaryStep::whereHas('grade.grid')->where('salary_grade_id', $gradeId)->orderBy('sort')->orderBy('id')->get(['id', 'label', 'amount', 'salary_grade_id'])
+            : collect();
+    }
+
+    /** Modèles de traitement proposés à la création (seulement à qui peut affecter un modèle). */
+    #[Computed]
+    public function profiles()
+    {
+        return $this->canAssignProfile ? PayProfile::where('is_active', true)->orderBy('name')->get(['id', 'name']) : collect();
+    }
+
+    /** Montant libre hors échelon et net visé : réservés à ceux qui peuvent modifier les salaires. */
+    #[Computed]
+    public function canOverrideSalary(): bool
+    {
+        return auth()->user()->canDo('update', 'employee_salaries');
+    }
+
+    #[Computed]
+    public function canSetNet(): bool
+    {
+        return auth()->user()->canDo('update', 'employee_salaries');
+    }
+
+    #[Computed]
+    public function canAssignProfile(): bool
+    {
+        return auth()->user()->canDo('update', 'pay_profiles');
+    }
+
+    /** L'aperçu et le salaire en vigueur ne s'affichent qu'à ceux qui peuvent lire les salaires. */
+    #[Computed]
+    public function canSeeSalary(): bool
+    {
+        return auth()->user()->canDo('read', 'employee_salaries');
+    }
+
+    /** Salaire en vigueur d'un employé existant (lecture seule : un salaire se modifie dans « Employés et salaires »). */
+    #[Computed]
+    public function currentSalary(): ?EmployeeSalary
+    {
+        return $this->employeeId && $this->canSeeSalary
+            ? EmployeeSalary::where('employee_id', $this->employeeId)->inForceOn(now()->toDateString())->with(['grade', 'step'])->orderByDesc('effective_from')->first()
+            : null;
+    }
+
+    /**
+     * Aperçu de la paie en direct (création seulement). Au barème : base, famille et modèle choisi, mois complet.
+     * Il ne doit JAMAIS empêcher d'enregistrer : toute erreur devient un message.
+     *
+     * @return ?array<string, mixed>
+     */
+    #[Computed]
+    public function preview(): ?array
+    {
+        if ($this->employeeId || ! $this->canSeeSalary) {
+            return null;
+        }
+
+        $stepRaw = (string) ($this->form['salary_step_id'] ?? '');
+        $hasGrade = (bool) $this->position?->salary_grade_id;
+        $base = 0;
+
+        if ($hasGrade && ctype_digit($stepRaw)) {
+            $base = (int) ($this->steps->firstWhere('id', (int) $stepRaw)?->amount ?? 0);
+        } elseif (! $hasGrade || $stepRaw === 'free') {
+            $base = (int) preg_replace('/\D/', '', (string) ($this->form['base_salary'] ?? ''));
+        }
+
+        if ($base <= 0) {
+            return ['state' => 'empty'];
+        }
+
+        $net = $this->canSetNet ? (int) preg_replace('/\D/', '', (string) ($this->form['net_target'] ?? '')) : 0;
+        $guarantee = $net > 0 && ($this->form['net_mode'] ?? 'reference') === 'guarantee';
+        $profile = $this->canAssignProfile && ! empty($this->form['pay_profile_id']) ? (int) $this->form['pay_profile_id'] : null;
+
+        try {
+            $r = HypotheticalPay::preview(auth()->user()->company_id, [
+                'base' => $base,
+                'marital_status' => ($this->form['marital_status'] ?? '') ?: null,
+                'children' => (int) ($this->form['children_count'] ?? 0),
+                'hire_date' => ($this->form['hire_date'] ?? '') ?: null,
+                'pay_profile_id' => $profile,
+                'guaranteed_net' => $guarantee ? $net : null,
+            ]);
+        } catch (\RuntimeException $e) {
+            return ['state' => 'error', 'message' => $e->getMessage()];
+        } catch (\Throwable $e) {
+            report($e);
+
+            return ['state' => 'error', 'message' => "L'aperçu n'a pas pu être calculé. L'enregistrement de l'employé reste possible."];
+        }
+
+        return ['state' => 'ok', 'guaranteed' => $guarantee, 'profile' => $profile !== null, 'reference' => $net > 0 && ! $guarantee ? ['net' => $net, 'gap' => $r['net'] - $net] : null] + $r;
+    }
+
     /** Types de pièces que CET utilisateur a le droit d'ajouter. */
     #[Computed]
     public function uploadableTypes(): array
@@ -157,6 +286,7 @@ class EmployeeForm extends Component
             'form.first_name' => 'prénom', 'form.last_name' => 'nom', 'form.birth_date' => 'date de naissance',
             'form.department_id' => 'département', 'form.position_id' => 'poste', 'form.hire_date' => "date d'embauche",
             'form.contract_type' => 'type de contrat', 'form.duration_months' => 'durée du contrat', 'form.base_salary' => 'salaire',
+            'form.salary_step_id' => 'échelon', 'form.net_target' => 'net visé', 'form.net_mode' => 'usage du net', 'form.pay_profile_id' => 'modèle de traitement',
             'form.work_email' => 'email professionnel', 'form.personal_email' => 'email personnel',
             'form.children_count' => "nombre d'enfants", 'form.manager_id' => 'manager','form.leave_days_per_month' => 'jours de congé par mois',
             'docs.*.type' => 'type de pièce', 'docs.*.file' => 'fichier', 'docs.*.title' => 'libellé',
@@ -234,13 +364,23 @@ class EmployeeForm extends Component
         $this->authorizeAction('create', 'employees');
         $cid = auth()->user()->company_id; // unique / exists ne passent PAS par le filtre automatique
 
+        // Le salaire dépend de la catégorie du poste : montant libre seulement sans catégorie, ou si « Montant libre » est choisi.
+        $position = Position::where('company_id', $cid)->find((int) ($this->form['position_id'] ?? 0));
+        $gradeId = $position?->salary_grade_id;
+        $stepRaw = (string) ($this->form['salary_step_id'] ?? '');
+        $freeSalary = ! $gradeId || $stepRaw === 'free';
+
         $validated = $this->validate($this->identityRules() + $this->docRules() + [
             'form.department_id' => ['required', Rule::exists('departments', 'id')->where('company_id', $cid)],
             'form.position_id' => ['required', Rule::exists('positions', 'id')->where('company_id', $cid)->where('department_id', $this->form['department_id'] ?: 0)],
             'form.hire_date' => ['required', 'date'],
             'form.contract_type' => ['required', Rule::in(['CDI', 'CDD', 'STAGE'])],
             'form.duration_months' => ['nullable', 'integer', 'min:1', 'max:60', 'required_unless:form.contract_type,CDI'],
-            'form.base_salary' => ['required', 'integer', 'min:0'],
+            'form.base_salary' => $freeSalary ? ['required', 'integer', 'min:0'] : ['nullable'],
+            'form.salary_step_id' => ['nullable', 'string', 'max:20'],
+            'form.net_target' => ['nullable', 'integer', 'min:0'],
+            'form.net_mode' => ['nullable', Rule::in(['guarantee', 'reference'])],
+            'form.pay_profile_id' => ['nullable', Rule::exists('pay_profiles', 'id')->where('company_id', $cid)->where('is_active', true)],
             'form.create_account' => ['boolean'],
             'form.login_email_source' => [Rule::in(['work', 'personal'])],
             'form.send_work' => ['boolean'],
@@ -254,6 +394,43 @@ class EmployeeForm extends Component
         }
 
         $data = $validated['form'];
+
+        // Ligne de salaire à créer avec l'employé (règles dans EmployeeSalaryDraft).
+        $step = null;
+
+        if ($gradeId && ctype_digit($stepRaw)) {
+            $model = SalaryStep::whereHas('grade.grid')->where('salary_grade_id', $gradeId)->find((int) $stepRaw);
+
+            if (! $model) {
+                $this->addError('form.salary_step_id', "Cet échelon n'appartient pas à la catégorie du poste.");
+
+                return;
+            }
+
+            $step = ['id' => (int) $model->id, 'grade_id' => (int) $model->salary_grade_id, 'amount' => (int) $model->amount];
+        }
+
+        $salary = EmployeeSalaryDraft::resolve([
+            'position_has_grade' => (bool) $gradeId,
+            'step' => $step,
+            'free_base' => $freeSalary ? (int) ($data['base_salary'] ?? 0) : 0,
+            'can_override' => $this->canOverrideSalary,
+            'net' => ($data['net_target'] ?? '') !== '' && $data['net_target'] !== null ? (int) $data['net_target'] : null,
+            'net_mode' => $data['net_mode'] ?? 'reference',
+            'can_set_net' => $this->canSetNet,
+        ]);
+
+        if (! $salary['ok']) {
+            $this->addError($salary['field'] ?? 'form.base_salary', $salary['error']);
+
+            return;
+        }
+
+        $data['salary'] = $salary;
+        $data['base_salary'] = $salary['base']; // le contrat reçoit le même montant que la ligne de salaire
+        $data['pay_profile_id'] = $this->canAssignProfile && ($data['pay_profile_id'] ?? '') !== '' && $data['pay_profile_id'] !== null ? (int) $data['pay_profile_id'] : null;
+        unset($data['salary_step_id'], $data['net_target'], $data['net_mode']);
+
         $login = null;
         $sendTo = [];
 

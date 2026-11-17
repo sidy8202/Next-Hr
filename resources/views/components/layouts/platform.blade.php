@@ -10,6 +10,8 @@
         ['Journal d’audit', 'platform.audit', 'audit.view', 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z', 'platform.audit'],
         ['Rapports et analyses', 'platform.reports', 'reports.view', 'M3 3v18h18M7 15l4-4 3 3 5-6', 'platform.reports'],
         ['Règles de paie', 'platform.payroll-rules', 'plans.manage', 'M12 3v18m-6-6 6 6 6-6M4 7h16', 'platform.payroll-rules'],
+        ['Paquets par secteur', 'platform.payroll-packages', 'plans.manage', 'M12 3v18m-6-6 6 6 6-6M4 7h16', 'platform.payroll-packages'],
+
     ];
 @endphp
 <!DOCTYPE html>
@@ -70,7 +72,7 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                <div class="mx-auto max-w-7xl space-y-6">{{ $slot }}</div>
+                <div class="mx-auto w-full max-w-[1800px] space-y-6">{{ $slot }}</div>
             </main>
         </div>
     </div>

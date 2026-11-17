@@ -23,17 +23,25 @@
 
                 <ul class="space-y-1">
                     @foreach ($group['items'] as $item)
-                        @php($active = request()->routeIs(Str::before($item['route'], '.') . '*'))
+                        @php($active = request()->routeIs(...($item['match'] ?? [Str::before($item['route'], '.') . '*'])))
+                        @php($badge = \App\Support\NavBadges::count($item['badge'] ?? null))
                         <li>
-                            <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}"
-                               @class([
-                                   'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
-                                   'bg-brand-600 text-white shadow-sm' => $active,
-                                   'text-brand-200 hover:bg-white/10 hover:text-white' => ! $active,
-                               ])>
-                                <x-dynamic-component :component="'heroicon-o-' . $item['icon']" class="size-5 shrink-0" />      
-                                <span class="truncate" :class="collapsed && 'lg:hidden'">{{ $item['label'] }}</span>
-                            </a>
+                            @if ($item['route'] === 'chat.index')
+                                <livewire:chat.sidebar-unread />
+                            @else
+                                <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}"
+                                   @class([
+                                       'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition',
+                                       'bg-brand-600 text-white shadow-sm' => $active,
+                                       'text-brand-200 hover:bg-white/10 hover:text-white' => ! $active,
+                                   ])>
+                                    <x-dynamic-component :component="'heroicon-o-' . $item['icon']" class="size-5 shrink-0" />
+                                    <span class="truncate" :class="collapsed && 'lg:hidden'">{{ $item['label'] }}</span>
+                                    @if ($badge > 0)
+                                    <span class="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-white" :class="collapsed && 'lg:hidden'">{{ $badge }}</span>
+                                    @endif
+                                </a>
+                            @endif
                         </li>
                     @endforeach
                 </ul>

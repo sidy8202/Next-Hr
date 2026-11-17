@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} · Next HR</title>
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -13,7 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-surface-muted text-ink antialiased">
+<body data-user-id="{{ auth()->id() }}" class="bg-surface-muted text-ink antialiased">
     <x-ui.splash />
     <div x-data="{ collapsed: $persist(false), mobileOpen: false }" class="flex h-screen overflow-hidden">
         <x-sidebar />
@@ -22,13 +23,14 @@
             <x-navbar :title="$title" />
 
             <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                <div class="mx-auto max-w-7xl space-y-6">
+                <div class="mx-auto w-full max-w-[1800px] space-y-6">
                     {{ $slot }}
                 </div>
             </main>
         </div>
     </div>
     <x-ui.toast :flash="session('notify')" />
+    <livewire:chat.chat-call-dock />
     @livewireScripts
 </body>
 </html>

@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-6xl space-y-6">
+<div class="mx-auto w-full max-w-[1800px] space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold text-ink">Variables du mois</h1>
@@ -16,12 +16,6 @@
 
     @if ($flash)
         <div class="rounded-lg border border-line bg-surface-muted px-4 py-3 text-sm text-ink">{{ $flash }}</div>
-    @endif
-
-    @if ($closed)
-        <div class="rounded-lg border border-line bg-surface-muted px-4 py-3 text-sm text-ink">
-            Cette paie est clôturée : ses variables ne se modifient plus. Pour corriger une erreur, utilisez « Régulariser » dans « Paie du mois ».
-        </div>
     @endif
 
     @foreach ($syncNotes as $n)

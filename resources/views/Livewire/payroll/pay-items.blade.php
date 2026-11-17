@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-6xl space-y-6">
+<div class="mx-auto w-full max-w-[1800px] space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold text-ink">Rubriques de paie</h1>
@@ -99,7 +99,7 @@
                     </div>
                 @endif
 
-                @if ($calc_type !== 'system')
+                @if ($calc_type !== 'system' && $showLimits)
                     <div>
                         <label class="mb-1 block text-sm font-medium text-ink" for="floor_amount">Plancher (FCFA, facultatif)</label>
                         <input id="floor_amount" type="text" inputmode="numeric" wire:model="floor_amount" class="input w-full text-right">

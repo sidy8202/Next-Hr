@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-5xl space-y-6">
+<div class="mx-auto w-full max-w-[1800px] space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold text-ink">Grilles salariales</h1>

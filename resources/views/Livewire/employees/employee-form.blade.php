@@ -118,12 +118,12 @@
                         </select>
                     </x-ui.field>
                     <x-ui.field label="Poste" name="form.position_id" required>
-                        <select id="form.position_id" wire:model="form.position_id" class="input">
+                        <select id="form.position_id" wire:model.live="form.position_id" class="input">
                             <option value="">{{ ($form['department_id'] ?? null) ? 'Choisir…' : 'Choisissez d’abord un département' }}</option>
                             @foreach ($this->positions as $p)<option value="{{ $p->id }}">{{ $p->title }}</option>@endforeach
                         </select>
                     </x-ui.field>
-                    <x-ui.field label="Date d'embauche" name="form.hire_date" required><input id="form.hire_date" type="date" wire:model="form.hire_date" class="input"></x-ui.field>
+                    <x-ui.field label="Date d'embauche" name="form.hire_date" required><input id="form.hire_date" type="date" wire:model.live="form.hire_date" class="input"></x-ui.field>
 
                     @if ($employeeId)
                         <div>
@@ -131,6 +131,29 @@
                             <livewire:employee-lookup wire:model="form.manager_id" target="manager" :allow-create="false" wire:key="lookup-manager" />
                             @error('form.manager_id')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
                         </div>
+
+                        @if ($this->canSeeSalary)
+                            <div class="rounded-xl border border-line bg-surface-muted/50 p-4 sm:col-span-2">
+                                <p class="text-sm font-semibold">Salaire en vigueur</p>
+                                @if ($this->currentSalary)
+                                    <p class="mt-1 text-sm">
+                                        {{ number_format($this->currentSalary->base_amount, 0, ',', ' ') }} FCFA
+                                        @if ($this->currentSalary->step) · {{ $this->currentSalary->grade?->code }} {{ $this->currentSalary->step->label }} @endif
+                                        <span class="text-xs text-ink-muted">· depuis le {{ $this->currentSalary->effective_from->format('d/m/Y') }}</span>
+                                    </p>
+                                    <p class="mt-1 text-xs text-ink-muted">
+                                        @if ($this->currentSalary->target_net !== null)
+                                            Net {{ $this->currentSalary->mode === 'net_target' ? 'garanti' : 'connu' }} : {{ number_format($this->currentSalary->target_net, 0, ',', ' ') }} FCFA.
+                                        @else
+                                            Aucun net connu : la paie de cet employé n’est pas vérifiée.
+                                        @endif
+                                    </p>
+                                @else
+                                    <p class="mt-1 text-sm text-ink-muted">Aucun salaire en vigueur n’est enregistré pour cet employé.</p>
+                                @endif
+                                <p class="mt-2 text-xs text-ink-muted">Le salaire ne se modifie pas ici : l’historique des salaires ne s’écrase jamais. Utilisez « Employés et salaires » dans le menu Paie.</p>
+                            </div>
+                        @endif
                     @else
                         <x-ui.field label="Type de contrat" name="form.contract_type" required>
                             <select id="form.contract_type" wire:model.live="form.contract_type" class="input"><option value="CDI">CDI</option><option value="CDD">CDD</option><option value="STAGE">Stage</option></select>
@@ -138,7 +161,24 @@
                         @if (($form['contract_type'] ?? '') !== 'CDI')
                             <x-ui.field label="Durée (mois)" name="form.duration_months" required><input id="form.duration_months" type="number" min="1" max="60" wire:model="form.duration_months" class="input"></x-ui.field>
                         @endif
-                        <x-ui.field label="Salaire de base" name="form.base_salary" required><input id="form.base_salary" type="number" min="0" wire:model="form.base_salary" class="input"></x-ui.field>
+                        @if ($this->position?->salary_grade_id)
+                            <x-ui.field label="Échelon salarial" name="form.salary_step_id" required>
+                                <select id="form.salary_step_id" wire:model.live="form.salary_step_id" class="input">
+                                    <option value="">Choisir…</option>
+                                    @foreach ($this->steps as $step)<option value="{{ $step->id }}">{{ $step->label }} · {{ number_format($step->amount, 0, ',', ' ') }} FCFA</option>@endforeach
+                                    @if ($this->canOverrideSalary)<option value="free">Montant libre (hors échelon)</option>@endif
+                                </select>
+                                <p class="mt-1 text-xs text-ink-muted">Le poste a une catégorie salariale : le salaire de base vient de la grille.</p>
+                            </x-ui.field>
+                            @if (($form['salary_step_id'] ?? '') === 'free')
+                                <x-ui.field label="Salaire de base (montant libre)" name="form.base_salary" required>
+                                    <input id="form.base_salary" type="number" min="0" wire:model.live.debounce.500ms="form.base_salary" class="input">
+                                    <p class="mt-1 text-xs text-amber-700 dark:text-amber-300">Hors échelon : ce choix est enregistré dans le journal d’audit.</p>
+                                </x-ui.field>
+                            @endif
+                        @else
+                            <x-ui.field label="Salaire de base" name="form.base_salary" required><input id="form.base_salary" type="number" min="0" wire:model.live.debounce.500ms="form.base_salary" class="input"></x-ui.field>
+                        @endif
 
                         <div>
                             <label for="leave_days_per_month" class="mb-1 block text-sm font-medium">Jours de congé acquis par mois</label>
@@ -146,6 +186,39 @@
                             <p class="mt-1 text-xs text-ink-muted">Cumulé à partir de la date d’embauche. Vide = valeur par défaut de l’entreprise (2,5).</p>
                             @error('form.leave_days_per_month')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                         </div>
+
+                        @if ($this->canSetNet || $this->canAssignProfile)
+                            <div class="space-y-4 rounded-xl border border-line p-4 sm:col-span-2">
+                                <div>
+                                    <p class="text-sm font-semibold">Paie de cet employé <span class="font-normal text-ink-muted">(facultatif)</span></p>
+                                    <p class="text-xs text-ink-muted">La ligne de salaire datée est créée avec l’employé, à partir de sa date d’embauche.</p>
+                                </div>
+
+                                @if ($this->canSetNet)
+                                    <div class="grid gap-4 sm:grid-cols-2">
+                                        <x-ui.field label="Net connu / net visé (FCFA)" name="form.net_target">
+                                            <input id="form.net_target" type="number" min="0" wire:model.live.debounce.500ms="form.net_target" class="input" placeholder="Ex. 225000">
+                                        </x-ui.field>
+                                        <div>
+                                            <p class="mb-1 text-sm font-medium">Que faire de ce net ?</p>
+                                            <label class="flex items-start gap-2 text-sm"><input type="radio" value="reference" wire:model.live="form.net_mode" class="mt-1"> <span>Référence de contrôle : chaque mois, la paie est comparée à ce net.</span></label>
+                                            <label class="mt-1 flex items-start gap-2 text-sm"><input type="radio" value="guarantee" wire:model.live="form.net_mode" class="mt-1"> <span>Net garanti : le moteur calcule le sursalaire pour l’atteindre.</span></label>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-ink-muted">Sans net, la paie de cet employé sera calculée mais pas vérifiée (« net connu absent »). Le net se saisit une fois : il reste valable tant que le salaire ne change pas.</p>
+                                @endif
+
+                                @if ($this->canAssignProfile)
+                                    <x-ui.field label="Modèle de traitement" name="form.pay_profile_id">
+                                        <select id="form.pay_profile_id" wire:model.live="form.pay_profile_id" class="input">
+                                            <option value="">Aucun pour l’instant</option>
+                                            @foreach ($this->profiles as $profile)<option value="{{ $profile->id }}">{{ $profile->name }}</option>@endforeach
+                                        </select>
+                                        <p class="mt-1 text-xs text-ink-muted">Primes et indemnités du modèle, à partir de la date d’embauche.</p>
+                                    </x-ui.field>
+                                @endif
+                            </div>
+                        @endif
                         
                     @endif
                 </div>
@@ -199,13 +272,45 @@
                     </select>
                 </x-ui.field>
                 @if (($form['marital_status'] ?? '') === 'married')
-                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model="form.spouse_works"> Le conjoint travaille</label>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="form.spouse_works"> Le conjoint travaille</label>
                 @endif
-                <x-ui.field label="Enfants à charge" name="form.children_count"><input id="form.children_count" type="number" min="0" max="30" wire:model="form.children_count" class="input"></x-ui.field>
+                <x-ui.field label="Enfants à charge" name="form.children_count"><input id="form.children_count" type="number" min="0" max="30" wire:model.live.debounce.500ms="form.children_count" class="input"></x-ui.field>
             </x-ui.section>
 
+            @if (! $employeeId && $this->canSeeSalary)
+                <x-ui.section title="6. Aperçu de la paie" description="Au barème, en direct. Rien n'est enregistré.">
+                    @if (($this->preview['state'] ?? 'empty') === 'ok')
+                        <dl class="space-y-2 text-sm">
+                            <div class="flex justify-between gap-3"><dt class="text-ink-muted">Brut</dt><dd class="font-medium">{{ number_format($this->preview['gross'], 0, ',', ' ') }} FCFA</dd></div>
+                            <div class="flex justify-between gap-3"><dt class="text-ink-muted">Cotisations sociales (salarié)</dt><dd>{{ number_format($this->preview['social'], 0, ',', ' ') }} FCFA</dd></div>
+                            <div class="flex justify-between gap-3"><dt class="text-ink-muted">Impôt sur salaire (ITS)</dt><dd>{{ number_format($this->preview['its'], 0, ',', ' ') }} FCFA</dd></div>
+                            <div class="flex justify-between gap-3 border-t border-line pt-2"><dt class="font-medium">Net du contrat</dt><dd class="text-base font-semibold text-emerald-600">{{ number_format($this->preview['net'], 0, ',', ' ') }} FCFA</dd></div>
+                            @if ($this->preview['supplement'] > 0)
+                                <div class="flex justify-between gap-3"><dt class="text-ink-muted">Sursalaire calculé</dt><dd>{{ number_format($this->preview['supplement'], 0, ',', ' ') }} FCFA</dd></div>
+                            @endif
+                            <div class="flex justify-between gap-3 border-t border-line pt-2"><dt class="text-ink-muted">Coût employeur (mois)</dt><dd>{{ number_format($this->preview['employer_cost'], 0, ',', ' ') }} FCFA</dd></div>
+                            <div class="flex justify-between gap-3"><dt class="text-ink-muted">Coût employeur (12 mois)</dt><dd>{{ number_format($this->preview['annual_cost'], 0, ',', ' ') }} FCFA</dd></div>
+                        </dl>
+
+                        @if ($this->preview['reference'])
+                            <p class="rounded-xl bg-surface-muted px-3 py-2 text-xs">Net connu saisi : {{ number_format($this->preview['reference']['net'], 0, ',', ' ') }} FCFA. Écart avec le net du contrat : {{ $this->preview['reference']['gap'] === 0 ? 'aucun' : ($this->preview['reference']['gap'] > 0 ? '+' : '−') . number_format(abs($this->preview['reference']['gap']), 0, ',', ' ') . ' FCFA' }}.</p>
+                        @endif
+
+                        @foreach ($this->preview['warnings'] as $warning)
+                            <p wire:key="pv-warn-{{ $loop->index }}" class="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-200">{{ $warning }}</p>
+                        @endforeach
+
+                        <p class="text-xs text-ink-muted">Mois complet, avec la famille de cette fiche{{ $this->preview['profile'] ? ' et les rubriques du modèle choisi' : ', sans modèle de traitement' }}. {{ $this->preview['guaranteed'] ? 'Net garanti : le sursalaire est calculé pour atteindre le net visé.' : 'Sans sursalaire, primes propres à l’employé ni variables.' }}</p>
+                    @elseif (($this->preview['state'] ?? 'empty') === 'error')
+                        <p class="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-200">Aperçu indisponible : {{ $this->preview['message'] }}</p>
+                    @else
+                        <p class="text-sm text-ink-muted">Choisissez un poste et un salaire pour voir le brut, le net et le coût employeur.</p>
+                    @endif
+                </x-ui.section>
+            @endif
+
             @unless ($employeeId)
-                <x-ui.section title="6. Accès à l'application" description="Un mot de passe provisoire est généré. Facultatif.">
+                <x-ui.section title="7. Accès à l'application" description="Un mot de passe provisoire est généré. Facultatif.">
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" wire:model.live="form.create_account"> Créer un compte pour cet employé</label>
                     @if ($form['create_account'] ?? false)
                         <x-ui.field label="Adresse de connexion" name="form.login_email_source">

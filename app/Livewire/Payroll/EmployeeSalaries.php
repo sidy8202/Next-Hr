@@ -11,6 +11,7 @@ use App\Models\SalaryGrade;
 use App\Models\SalaryStep;
 use App\Services\Payroll\NetImportParser;
 use App\Services\Payroll\PayrollNets;
+use App\Services\Payroll\PayrollUiMode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -355,6 +356,7 @@ class EmployeeSalaries extends Component
             'grades' => SalaryGrade::whereHas('grid', fn ($q) => $q->where('is_active', true))->with(['grid', 'steps'])->orderBy('sort')->orderBy('id')->get(),
             'calculated' => $this->calculatedSupplements($rows),
             'withoutNet' => $rows->filter(fn ($r) => $r['salary'] && $r['salary']->target_net === null)->count(),
+            'showNetTarget' => PayrollUiMode::showNetTarget(PayrollUiMode::isSimple($this->companyId()), $this->mode),
             'canEdit' => $this->allowed('update', 'employee_salaries'),
         ])->layout($this->resolveLayout('company'), ['title' => 'Salaires des employés']);
     }

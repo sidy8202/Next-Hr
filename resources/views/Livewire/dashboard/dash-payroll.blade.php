@@ -2,8 +2,10 @@
     $fcfa = fn ($v) => number_format((int) $v, 0, ',', ' ').' FCFA';
 @endphp
 <div class="space-y-6">
+    <livewire:payroll.dashboard-panel />
+
+    <h3 class="pt-2 text-sm font-semibold">Structure des salaires (contrats)</h3>
     @if (! $d['available'])
-        <p class="rounded-2xl border border-line bg-surface p-8 text-center text-sm text-ink-muted">Aucun salaire de base n’est encore renseigné dans les contrats : la vue Paie se remplira dès que les salaires seront saisis.</p>
     @else
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <x-platform.kpi label="Masse salariale de base (mensuelle)" :value="$d['total']" suffix=" FCFA" color="#6366f1" hint="somme des salaires bruts de base des contrats" :delay="0" />
@@ -26,14 +28,4 @@
         </div>
     @endif
 
-    <x-ui.reveal :delay="220" class="rounded-2xl border border-dashed border-indigo-300 bg-indigo-50/50 p-5 dark:border-indigo-500/40 dark:bg-indigo-500/5">
-        <h3 class="text-sm font-semibold">Le cycle de paie arrive</h3>
-        <p class="mt-1 text-sm text-ink-muted">Cette vue accueillera bientôt :</p>
-        <ul class="mt-2 grid gap-1.5 text-sm sm:grid-cols-2">
-            <li class="flex gap-2"><span class="text-indigo-600">▸</span>le net total du mois, face au net habituel</li>
-            <li class="flex gap-2"><span class="text-indigo-600">▸</span>les bulletins dont le net a changé, par département</li>
-            <li class="flex gap-2"><span class="text-indigo-600">▸</span>l’effet des primes, mises à pied, absences et heures supplémentaires</li>
-            <li class="flex gap-2"><span class="text-indigo-600">▸</span>l’avancement : calcul, vérification, clôture, envoi des bulletins</li>
-        </ul>
-    </x-ui.reveal>
 </div>

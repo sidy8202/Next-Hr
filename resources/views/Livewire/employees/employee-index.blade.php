@@ -8,6 +8,7 @@
         <div class="flex flex-wrap items-center gap-2 border-b border-line p-3">
             @canDo('create', 'employees')
                 <x-ui.button :href="route('employees.create')" wire:navigate icon="plus">Nouveau</x-ui.button>
+                <x-ui.button variant="secondary" :href="route('employees.import')" wire:navigate icon="arrow-up-tray">Importer</x-ui.button>
                 <x-ui.button variant="secondary" :href="route('employees.batch')" wire:navigate icon="user-group">Nouvelles recrues</x-ui.button>
             @endcanDo
             @canDo('update', 'employees')

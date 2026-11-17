@@ -3,6 +3,7 @@
     $tones = ['amber' => 'bg-amber-500', 'rose' => 'bg-rose-500', 'sky' => 'bg-sky-500', 'violet' => 'bg-violet-500'];
 @endphp
 <div class="space-y-6">
+    <livewire:payroll.home-card />
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <x-platform.kpi label="Effectif actif" :value="$p['active']" suffix=" employés" color="#6366f1" :hint="$d['hires30'].' recrue(s) sur 30 jours'" :delay="0" />
         <x-platform.kpi label="Présents aujourd’hui" :value="$p['present']" color="#10b981" :hint="$p['active'] ? round($p['present'] / $p['active'] * 100).' % de l’effectif' : ''" :delay="60" />

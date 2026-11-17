@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-3xl space-y-6">
+<div class="mx-auto w-full max-w-[1800px] space-y-6">
     <div>
         <h1 class="text-xl font-semibold text-ink">Mes bulletins de paie</h1>
         <p class="mt-1 text-sm text-ink-muted">

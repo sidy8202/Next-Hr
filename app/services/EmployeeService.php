@@ -7,6 +7,8 @@ use App\Models\Contract;
 use App\Models\Department;
 use App\Models\Document;
 use App\Models\Employee;
+use App\Models\EmployeePayProfile;
+use App\Models\EmployeeSalary;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,7 @@ use Illuminate\Support\Str;
 use Throwable;
 
 /**
- * Toute la logique de création / modification d'un employé (contrat, accès, pièces jointes).
+ * Toute la logique de création / modification d'un employé (contrat, salaire daté, modèle de traitement, accès, pièces jointes).
  * Les composants Livewire VALIDENT ; ce service ENREGISTRE, dans une transaction : tout ou rien.
  */
 class EmployeeService
@@ -180,7 +182,71 @@ class EmployeeService
             'status' => 'active',
         ]);
 
+        $this->createSalary($employee, $p, $hire);
+        $this->assignPayProfile($employee, $p, $hire);
+
         return $employee;
+    }
+
+    /**
+     * Ligne de salaire DATÉE créée avec l'employé (même transaction) : la paie est prête dès le premier jour.
+     * $p['salary'] vient du formulaire (voir EmployeeSalaryDraft). Sans lui (import, appel ancien), on crée une ligne en brut fixé
+     * à partir du salaire de base du contrat, comme « Initialiser depuis les contrats ». Un salaire de base nul ne crée aucune ligne.
+     */
+    private function createSalary(Employee $employee, array $p, Carbon $hire): void
+    {
+        $s = $p['salary'] ?? null;
+
+        if ($s === null) {
+            $base = (int) ($p['base_salary'] ?? 0);
+            $s = ['create' => $base > 0, 'base' => $base, 'grade_id' => null, 'step_id' => null, 'mode' => 'gross', 'target_net' => null, 'override' => false];
+        }
+
+        if (empty($s['create']) || (int) $s['base'] <= 0) {
+            return;
+        }
+
+        $row = new EmployeeSalary([
+            'employee_id' => $employee->id,
+            'salary_grade_id' => $s['grade_id'] ?? null,
+            'salary_step_id' => $s['step_id'] ?? null,
+            'mode' => $s['mode'] ?? 'gross',
+            'base_amount' => (int) $s['base'],
+            'supplement_amount' => 0,
+            'target_net' => $s['target_net'] ?? null,
+            'effective_from' => $hire->toDateString(),
+            'effective_until' => null,
+            'notes' => ! empty($s['override']) ? "Créé avec l'employé : montant libre, hors échelon." : "Créé avec l'employé.",
+            'created_by' => auth()->id(),
+        ]);
+        $row->company_id = $employee->company_id;
+        $row->save();
+
+        AuditLogger::log('created', 'employee_salaries', $row->id, null, [
+            'employee_id' => $employee->id, 'base' => (int) $s['base'], 'mode' => $row->mode, 'step_id' => $row->salary_step_id,
+            'target_net' => $row->target_net, 'free_amount_on_graded_position' => ! empty($s['override']), 'from' => $hire->toDateString(),
+        ]);
+    }
+
+    /** Modèle de traitement choisi à la création : affectation datée de la date d'embauche (rien si aucun modèle n'est choisi). */
+    private function assignPayProfile(Employee $employee, array $p, Carbon $hire): void
+    {
+        if (empty($p['pay_profile_id'])) {
+            return;
+        }
+
+        $row = new EmployeePayProfile([
+            'employee_id' => $employee->id,
+            'pay_profile_id' => (int) $p['pay_profile_id'],
+            'effective_from' => $hire->toDateString(),
+            'effective_until' => null,
+            'notes' => "Choisi à la création de l'employé.",
+            'created_by' => auth()->id(),
+        ]);
+        $row->company_id = $employee->company_id;
+        $row->save();
+
+        AuditLogger::log('created', 'pay_profiles', (int) $p['pay_profile_id'], null, ['assigned_to_employee' => $employee->id, 'from' => $hire->toDateString()]);
     }
 
     /**

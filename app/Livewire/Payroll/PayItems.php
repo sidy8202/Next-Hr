@@ -7,6 +7,7 @@ use App\Models\EmployeePayItem;
 use App\Models\PayItem;
 use App\Models\PayItemScaleRow;
 use App\Models\PayProfileItem;
+use App\Services\Payroll\PayrollUiMode;
 use Livewire\Component;
 
 class PayItems extends Component
@@ -366,6 +367,8 @@ class PayItems extends Component
 
         $editing = $this->editingId ? PayItem::with('scaleRows')->find($this->editingId) : null;
 
+        $simple = PayrollUiMode::isSimple($this->companyId());
+
         return view('livewire.payroll.pay-items', [
             'groups' => $groups,
             'desc' => $desc,
@@ -374,7 +377,8 @@ class PayItems extends Component
             'editing' => $editing,
             'locked' => (bool) $editing?->is_system,
             'types' => PayItem::TYPES,
-            'calcTypes' => PayItem::CALC_TYPES,
+            'calcTypes' => PayrollUiMode::calcTypes(PayItem::CALC_TYPES, $simple, $this->calc_type),
+            'showLimits' => PayrollUiMode::showLimits($simple, $this->floor_amount !== '' || $this->cap_amount !== ''),
             'canEdit' => $this->allowed('update', 'pay_items'),
             'canDelete' => $this->allowed('delete', 'pay_items'),
         ])->layout($this->resolveLayout('company'), ['title' => 'Rubriques de paie']);

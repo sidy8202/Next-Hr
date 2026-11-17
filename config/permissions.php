@@ -28,6 +28,9 @@ return [
         'assignments' => ['label' => 'Affectations et intérims', 'module' => 'Organisation'],
         'explanations' => ['label' => 'Demande Explications', 'module' => 'Organisation'],
 
+        'users' => ['label' => 'Utilisateurs', 'module' => 'Administration'],
+       'team_chat' => ['label' => 'Messagerie interne', 'module' => 'Collaboration'],
+
 
 
         // Contrats et documents

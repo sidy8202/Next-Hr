@@ -58,6 +58,7 @@ class Employee extends Model
         'manager_id',
         'hire_date',
         'status',
+        'work_email',
         'photo_path',
     ];
 
